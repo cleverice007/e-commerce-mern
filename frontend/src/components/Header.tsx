@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FaShoppingCart, FaUser, FaSearch } from 'react-icons/fa';
 
 const Header: React.FC = () => {
@@ -6,7 +7,7 @@ const Header: React.FC = () => {
     <header className="bg-blue-500 text-white">
       <nav className="container mx-auto flex items-center justify-between p-4">
         <div className="flex items-center flex-grow">
-          <a href="/" className="text-xl font-bold mr-4">E-commerce</a>
+          <Link to="/" className="text-xl font-bold mr-4">E-commerce</Link>
           <div className="flex items-center bg-white text-gray-800 rounded">
             <input
               type="text"
@@ -19,12 +20,12 @@ const Header: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center">
-          <a href="/cart" className="flex items-center mx-3">
+          <Link to="/cart" className="flex items-center mx-3">
             <FaShoppingCart className="mr-1" /> Cart
-          </a>
-          <a href="/login" className="flex items-center">
+          </Link>
+          <Link to="/login" className="flex items-center">
             <FaUser className="mr-1" /> Sign In
-          </a>
+          </Link>
         </div>
       </nav>
     </header>
