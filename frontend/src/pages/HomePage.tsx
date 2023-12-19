@@ -2,6 +2,8 @@ import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
+import axios from 'axios';
+import { useEffect,useState } from 'react';
 
 const HomePage: React.FC = () => {
     return (
