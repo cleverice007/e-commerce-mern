@@ -1,18 +1,18 @@
 import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Product from '../components/Product';
+import ProductCard from '../components/ProductCard';
 
-const Home: React.FC = () => {
+const HomePage: React.FC = () => {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex flex-col flex-grow">
-          <Product />
+          <ProductCard />
         </main>
         <Footer />
       </div>
     );
   };
-  
-export default Home;
+
+export default HomePage;

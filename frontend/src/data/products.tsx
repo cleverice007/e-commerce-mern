@@ -80,3 +80,5 @@ interface Product {
   ];
 
 export { fakeProducts };
+export type { Product };
+

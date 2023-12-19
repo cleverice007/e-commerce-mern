@@ -1,6 +1,7 @@
 import React from 'react';
 import { fakeProducts } from '../data/products';
 import Rating from './Rating';
+import { Link } from 'react-router-dom';
 
 const ProductCard: React.FC = () => {
     return (
@@ -9,7 +10,9 @@ const ProductCard: React.FC = () => {
           <div key={product._id} className="max-w-sm rounded overflow-hidden shadow-lg">
             <img className="w-full" src={product.image} alt={product.name} />
             <div className="px-6 py-4">
+            <Link to={`/products/${product._id}`}>
               <div className="font-bold text-xl mb-2">{product.name}</div>
+              </Link>
               <p className="text-gray-700 text-base">{product.description}</p>
             </div>
             <div className="px-6 pt-4 pb-2">
