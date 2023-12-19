@@ -1,5 +1,6 @@
 import React from 'react';
 import { fakeProducts } from '../data/products';
+import Rating from './Rating';
 
 const ProductCard: React.FC = () => {
     return (
@@ -14,7 +15,7 @@ const ProductCard: React.FC = () => {
             <div className="px-6 pt-4 pb-2">
               <div className="text-xl mb-2">${product.price}</div>
               <div className="text-gray-700 text-base">
-                Rating: {product.rating} ({product.numReviews} reviews)
+              <Rating value={product.rating} text={`${product.numReviews} reviews`} />
               </div>
             </div>
           </div>
