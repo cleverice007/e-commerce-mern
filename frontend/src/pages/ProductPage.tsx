@@ -1,19 +1,26 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Rating from '../components/Rating';
-import { fakeProducts , Product } from '../data/products'; 
+import { Product } from '../data/products'; 
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { useGetProductDetailsQuery } from '../slices/productSlice';
 
-
 const ProductPage: React.FC = () => {
   const { id: productId } = useParams<{ id: string }>();
+  
   const {
     data: product,
     isLoading,
     error,
-  } = productId ? useGetProductDetailsQuery(productId) : { data: null, isLoading: false, error: null };
+  } = useGetProductDetailsQuery(productId || 'undefined');
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.toString()}</div>; 
+  }
 
   if (!product) {
     return <div className="text-center">Product not found</div>;
@@ -21,11 +28,6 @@ const ProductPage: React.FC = () => {
 
   return (
     <>
-     isLoading ? (
-      <div>Loading...</div>
-    ) : error ? (
-      <div>error</div>
-    ) : (
       <Link to='/' className='flex items-center text-blue-600 hover:text-blue-800 my-3'>
         <AiOutlineArrowLeft className='mr-2' /> Go Back
       </Link>
@@ -69,7 +71,6 @@ const ProductPage: React.FC = () => {
           </div>
         </div>
       </div>
-    )
     </>
   );
 };
