@@ -23,9 +23,10 @@ const initialState: CartState = {
   totalPrice: 0,
 };
 
-const addDecimals = (num: number): string => {
-  return (Math.round(num * 100) / 100).toFixed(2);
+const addDecimals = (num: number): number => {
+  return Math.round(num * 100) / 100;
 };
+
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -43,19 +44,14 @@ const cartSlice = createSlice({
         state.cartItems = [...state.cartItems, item];
       }
 
-      state.itemsPrice = parseFloat(
-        addDecimals(
-          state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
-        )
+      state.itemsPrice = addDecimals(
+        state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
       );
 
-      state.shippingPrice = parseFloat(
-        addDecimals(state.itemsPrice > 100 ? 0 : 10)
-      );
+      state.shippingPrice = addDecimals(state.itemsPrice > 100 ? 0 : 10);
 
-      state.taxPrice = parseFloat(
-        addDecimals(Number((0.15 * state.itemsPrice).toFixed(2)))
-      );
+      state.taxPrice = addDecimals(0.15 * state.itemsPrice);
+
 
       state.totalPrice = parseFloat(
         (
@@ -71,7 +67,7 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart } = cartSlice.actions;
+export const { addToCart, removeFromCart } = cartSlice.actions;
 export type { CartItem, CartState };
 
 export default cartSlice.reducer;
