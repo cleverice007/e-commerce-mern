@@ -66,7 +66,26 @@ const ProductPage: React.FC = () => {
                 <div>{product.countInStock > 0 ? 'In Stock' : 'Out Of Stock'}</div>
               </div>
             </div>
-
+            {product.countInStock > 0 && (
+              <div className="mb-2">
+                <div className="flex justify-between">
+                  <div>Qty</div>
+                  <div>
+                    <select
+                      className="w-16 p-1 border rounded"
+                      value={qty}
+                      onChange={(e) => setQty(Number(e.target.value))}
+                    >
+                      {[...Array(product.countInStock).keys()].map((x) => (
+                        <option key={x + 1} value={x + 1}>
+                          {x + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
             <button
               className={`w-full bg-blue-500 text-white py-2 rounded ${
                 product.countInStock === 0 ? 'opacity-50 cursor-not-allowed' : ''
