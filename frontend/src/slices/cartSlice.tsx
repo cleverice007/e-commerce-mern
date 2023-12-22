@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { addDecimals,updateCart } from '../utils/cartUtils';
 
 interface CartItem {
   _id: string;
@@ -23,9 +24,6 @@ const initialState: CartState = {
   totalPrice: 0,
 };
 
-const addDecimals = (num: number): number => {
-  return Math.round(num * 100) / 100;
-};
 
 
 const cartSlice = createSlice({

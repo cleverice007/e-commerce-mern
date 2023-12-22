@@ -1,9 +1,10 @@
 import { CartState,CartItem } from '../slices/cartSlice';  
 
 
-export const addDecimals = (num: number): string => {
-    return (Math.round(num * 100) / 100).toFixed(2);
+export const addDecimals = (num: number): number => {
+    return Math.round(num * 100) / 100;
   };
+  
   
   export const updateCart = (state: CartState): CartState => {
     // Calculate the items price in whole number (pennies) to avoid issues with
