@@ -6,6 +6,7 @@ interface CartItem {
   name: string;
   price: number;
   qty: number;
+  image: string;
 }
 
 interface CartState {
@@ -32,38 +33,32 @@ const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action: PayloadAction<CartItem>) => {
       const item = action.payload;
+
       const existItem = state.cartItems.find((x) => x._id === item._id);
 
       if (existItem) {
+        // If exists, update quantity
         state.cartItems = state.cartItems.map((x) =>
           x._id === existItem._id ? item : x
         );
       } else {
+        // If not exists, add new item to cartItems
         state.cartItems = [...state.cartItems, item];
       }
 
-      state.itemsPrice = addDecimals(
-        state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
-      );
+      // Update the prices and save to storage
+      return updateCart(state);
+    },
+    removeFromCart: (state, action) => {
+      // Filter out the item to remove from the cart
+      state.cartItems = state.cartItems.filter((x) => x._id !== action.payload);
 
-      state.shippingPrice = addDecimals(state.itemsPrice > 100 ? 0 : 10);
-
-      state.taxPrice = addDecimals(0.15 * state.itemsPrice);
-
-
-      state.totalPrice = parseFloat(
-        (
-          state.itemsPrice +
-          state.shippingPrice +
-          state.taxPrice
-        ).toFixed(2)
-      );
-
-      // Save the cart to localStorage
-      localStorage.setItem('cart', JSON.stringify(state));
+      // Update the prices and save to storage
+      return updateCart(state);
     },
   },
 });
+
 
 export const { addToCart, removeFromCart } = cartSlice.actions;
 export type { CartItem, CartState };
