@@ -1,7 +1,7 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Rating from '../components/Rating';
-import { Product } from '../data/products'; 
+import { useState } from 'react';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { useGetProductDetailsQuery } from '../slices/productSlice';
 
