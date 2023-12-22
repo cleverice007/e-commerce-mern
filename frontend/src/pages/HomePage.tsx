@@ -8,15 +8,14 @@ import ProductCard from '../components/ProductCard';
 
 
 const HomePage: React.FC = () => {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex flex-col flex-grow">
-          <ProductCard />
-        </main>
-        <Footer />
-      </div>
-    );
-  };
+  return (
+    <div className="flex flex-col min-h-screen">
+      <main className="flex flex-col flex-grow">
+        <ProductCard />
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 export default HomePage;
