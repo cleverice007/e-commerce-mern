@@ -18,6 +18,11 @@ const CartPage: React.FC = () => {
         dispatch(removeFromCart(id));
     };
 
+    const checkoutHandler = () => {
+        navigate('/login?redirect=/shipping');
+      };
+    
+
     return (
         <>
         <div className="container mx-auto mt-5">
@@ -78,6 +83,7 @@ const CartPage: React.FC = () => {
                                 cartItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
                             disabled={cartItems.length === 0}
+                            onClick={checkoutHandler}
                         >
                             Proceed To Checkout
                         </button>
