@@ -1,9 +1,10 @@
 import { apiSlice } from './apiSlice';
 import { USERS_URL } from '../constants';
+import { type } from 'os';
 
 
 interface LoginRequest {
-    username: string;
+    email: string;
     password: string;
   }
   
@@ -20,3 +21,4 @@ interface LoginRequest {
   });
   
   export const { useLoginMutation } = userApiSlice;
+  export type { LoginRequest };
