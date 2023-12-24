@@ -3,8 +3,14 @@ import { Link } from 'react-router-dom';
 import { FaShoppingCart, FaUser, FaSearch } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { CartState } from '../slices/cartSlice';  
+import {UserInfo, AuthState} from '../slices/authSlice'; 
 const Header: React.FC = () => {
+
   const { cartItems } = useSelector((state: { cart: CartState }) => state.cart);
+  const { userInfo } = useSelector((state: { auth: AuthState }) => state.auth);
+  const logoutHandler = () => {
+    
+  }
 
   return (
     <header className="bg-blue-500 text-white">
@@ -31,9 +37,21 @@ const Header: React.FC = () => {
               </span>
             )}
           </Link>
-          <Link to="/login" className="flex items-center">
-            <FaUser className="mr-1" /> Sign In
-          </Link>
+          {userInfo ? (
+            <div className="relative">
+              <button className="flex items-center mx-3">
+                <FaUser className="mr-1" /> {userInfo.name}
+              </button>
+              <div className="absolute right-0 bg-white text-gray-800 rounded shadow-lg mt-2 py-1">
+                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
+                <button onClick={logoutHandler} className="block px-4 py-2 hover:bg-gray-100 text-left w-full">Logout</button>
+              </div>
+            </div>
+          ) : (
+            <Link to="/auth" className="flex items-center mx-3">
+              <FaUser className="mr-1" /> Sign In
+            </Link>
+          )}
         </div>
       </nav>
     </header>
