@@ -4,21 +4,31 @@ import { type } from 'os';
 
 
 interface LoginRequest {
-    email: string;
-    password: string;
-  }
-  
-  export const userApiSlice = apiSlice.injectEndpoints({
-    endpoints: (builder) => ({
-      login: builder.mutation<unknown, LoginRequest>({
-        query: (data) => ({
-          url: `${USERS_URL}/auth`,
-          method: 'POST',
-          body: data,
-        }),
+  email: string;
+  password: string;
+}
+interface LogoutResponse {
+  message: string;
+}
+
+export const userApiSlice = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation<unknown, LoginRequest>({
+      query: (data) => ({
+        url: `${USERS_URL}/auth`,
+        method: 'POST',
+        body: data,
       }),
     }),
-  });
-  
-  export const { useLoginMutation } = userApiSlice;
-  export type { LoginRequest };
+    logout: builder.mutation<LogoutResponse, void>({  
+      query: () => ({
+        url: `${USERS_URL}/logout`,
+        method: 'POST',
+      }),
+    }),
+  }),
+});
+
+
+export const { useLoginMutation, useLogoutMutation } = userApiSlice;
+export type { LoginRequest, LogoutResponse };
