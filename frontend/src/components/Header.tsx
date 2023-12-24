@@ -1,17 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaShoppingCart, FaUser, FaSearch } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 import { CartState } from '../slices/cartSlice';  
-import {UserInfo, AuthState} from '../slices/authSlice'; 
+import {UserInfo, AuthState,logout} from '../slices/authSlice'; 
+import { useLogoutMutation } from '../slices/userApiSlice';
 const Header: React.FC = () => {
 
   const { cartItems } = useSelector((state: { cart: CartState }) => state.cart);
   const { userInfo } = useSelector((state: { auth: AuthState }) => state.auth);
-  const logoutHandler = () => {
-    
-  }
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [logoutApiCall] = useLogoutMutation();
 
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <header className="bg-blue-500 text-white">
       <nav className="container mx-auto flex items-center justify-between p-4">
