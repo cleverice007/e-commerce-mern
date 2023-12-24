@@ -4,10 +4,14 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const App: React.FC = () => {
   return (
     <Router>
+      <ToastContainer />
       <div className="flex flex-col min-h-screen">
         <Header />
         <main className="flex-1 py-3">
