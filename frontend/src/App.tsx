@@ -5,6 +5,9 @@ import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
 import LoginPage from './pages/LoginPage';
+import CartPage from './pages/CartPage';
+import RegisterPage from './pages/RegisterPage';
+
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -21,6 +24,8 @@ const App: React.FC = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/products/:id" element={<ProductPage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/register" element={<RegisterPage />} />
             </Routes>
           </div>
         </main>
