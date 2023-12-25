@@ -60,7 +60,7 @@ const Header: React.FC = () => {
               </div>
             </div>
           ) : (
-            <Link to="/auth" className="flex items-center mx-3">
+            <Link to="/login" className="flex items-center mx-3">
               <FaUser className="mr-1" /> Sign In
             </Link>
           )}
