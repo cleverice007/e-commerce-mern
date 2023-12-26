@@ -119,8 +119,7 @@ const RegisterPage: React.FC = () => {
               Register
             </button>
     
-            {isLoading && <div>Loading...</div>} {/* 替换成你的 Loader 组件 */}
-    
+            {isLoading && <div>Loading...</div>} 
           </form>
     
           <div className="py-3">

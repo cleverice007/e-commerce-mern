@@ -18,13 +18,18 @@ interface CartState {
   totalPrice: number;
 }
 
-const initialState: CartState = {
-  cartItems: [],
-  itemsPrice: 0,
-  shippingPrice: 0,
-  taxPrice: 0,
-  totalPrice: 0,
-};
+const initialState: CartState = localStorage.getItem('cart')
+  ? JSON.parse(localStorage.getItem('cart')!)
+  : {
+      cartItems: [],
+      itemsPrice: 0,
+      shippingPrice: 0,
+      taxPrice: 0,
+      totalPrice: 0,
+      shippingAddress: {}, 
+      paymentMethod: 'ECPay',
+    };
+
 
 
 
