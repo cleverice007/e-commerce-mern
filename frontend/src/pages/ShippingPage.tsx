@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { saveShippingAddress, CartState, CartItem, ShippingAddress } from '../slices/cartSlice';
+import { saveShippingAddress, CartState } from '../slices/cartSlice';
 import CheckoutSteps  from '../components/CheckoutSteps';
 
 const ShippingPage = () => {

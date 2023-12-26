@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import CartPage from './pages/CartPage';
 import RegisterPage from './pages/RegisterPage';
 import ShippingPage from './pages/ShippingPage';
+import PaymentPage from './pages/PaymentPage';
 import PrivateRoute from './components/PrivateRoute';
 
 import { ToastContainer } from 'react-toastify';
@@ -30,6 +31,7 @@ const App: React.FC = () => {
               <Route path="/register" element={<RegisterPage />} />
               <Route path='' element={<PrivateRoute />}>
                 <Route path='/shipping' element={<ShippingPage />} />
+                <Route path='/payment' element={<PaymentPage />} />
               </Route>
             </Routes>
           </div>
