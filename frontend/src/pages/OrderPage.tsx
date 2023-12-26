@@ -3,6 +3,14 @@ import { useGetOrderDetailsQuery } from '../slices/orderApiSlice';
 import Message from '../components/Message';
 
 const OrderPage: React.FC = () => {
+    interface OrderItem {
+        name: string;
+        qty: number;
+        image: string;
+        price: number;
+        product: string; // product id
+      }
+      
     const { id: orderId } = useParams<{ id: string }>();
 
     const { data: order, isLoading, error } = useGetOrderDetailsQuery(orderId);
@@ -62,7 +70,7 @@ const OrderPage: React.FC = () => {
                                 <Message>Order is empty</Message>
                             ) : (
                                 <div>
-                                    {order?.orderItems.map((item, index) => (
+                                    {order?.orderItems.map((item:OrderItem, index:number) => (
                                         <div key={index} className="mb-4">
                                             {/* Item details */}
                                             <div className="flex items-center">
