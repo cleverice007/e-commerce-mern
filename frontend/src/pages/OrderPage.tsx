@@ -1,13 +1,11 @@
 import { useParams, Link } from 'react-router-dom';
 import { useGetOrderDetailsQuery } from '../slices/orderApiSlice';
+import Message from '../components/Message';
 
 const OrderPage: React.FC = () => {
     const { id: orderId } = useParams<{ id: string }>();
 
     const { data: order, isLoading, error } = useGetOrderDetailsQuery(orderId);
-    function isError(err: unknown): err is Error {
-        return err instanceof Error;
-    }
 
     return (
         <div className="container mx-auto mt-10">
@@ -38,9 +36,7 @@ const OrderPage: React.FC = () => {
                                 {order?.shippingAddress.country}
                             </p>
                             {order?.isDelivered ? (
-                                <Message variant="success">
-                                    Delivered on {order?.deliveredAt}
-                                </Message>
+                                <Message variant="success">Delivered on {order?.deliveredAt}</Message>
                             ) : (
                                 <Message variant="danger">Not Delivered</Message>
                             )}
