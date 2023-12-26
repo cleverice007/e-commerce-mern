@@ -82,7 +82,7 @@ const PlaceOrderPage = () => {
                               <img src={item.image} alt={item.name} className="rounded" />
                             </div>
                             <div className="w-8/12">
-                              <Link to={`/product/${item._id}`} className="text-blue-500 hover:text-blue-700">
+                              <Link to={`/products/${item._id}`} className="text-blue-500 hover:text-blue-700">
                                 {item.name}
                               </Link>
                             </div>
