@@ -10,13 +10,24 @@ interface CartItem {
   countInStock: number;
 }
 
+interface ShippingAddress {
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
+}
+
+
 interface CartState {
   cartItems: CartItem[];
   itemsPrice: number;
   shippingPrice: number;
   taxPrice: number;
   totalPrice: number;
+  shippingAddress: ShippingAddress;  
+  paymentMethod: string;  
 }
+
 
 const initialState: CartState = localStorage.getItem('cart')
   ? JSON.parse(localStorage.getItem('cart')!)
@@ -61,6 +72,10 @@ const cartSlice = createSlice({
 
       // Update the prices and save to storage
       return updateCart(state);
+    },
+    saveShippingAddress: (state, action) => {
+      state.shippingAddress = action.payload;
+      localStorage.setItem('cart', JSON.stringify(state));
     },
   },
 });
