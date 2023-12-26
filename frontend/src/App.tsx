@@ -7,6 +7,7 @@ import ProductPage from './pages/ProductPage';
 import LoginPage from './pages/LoginPage';
 import CartPage from './pages/CartPage';
 import RegisterPage from './pages/RegisterPage';
+import ShippingPage from './pages/ShippingPage';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -26,6 +27,7 @@ const App: React.FC = () => {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/shipping" element={<ShippingPage />} />
             </Routes>
           </div>
         </main>
