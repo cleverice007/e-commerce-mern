@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import FormContainer from '../components/FormContainer';
-import { saveShippingAddress,CartState, CartItem,ShippingAddress } from '../slices/cartSlice';
+import { saveShippingAddress, CartState, CartItem, ShippingAddress } from '../slices/cartSlice';
+import CheckoutSteps  from '../components/CheckoutSteps';
 
 const ShippingPage = () => {
-  const  cart  = useSelector((state: { cart: CartState }) => state.cart);
+  const cart = useSelector((state: { cart: CartState }) => state.cart);
   const { shippingAddress } = cart;
 
   const [address, setAddress] = useState(shippingAddress.address || '');
@@ -26,6 +26,7 @@ const ShippingPage = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-5">
+      <CheckoutSteps step1 step2 />
       <h1 className="text-2xl font-bold mb-4">Shipping</h1>
       <form onSubmit={submitHandler}>
         <div className='mb-4'>
@@ -90,4 +91,4 @@ const ShippingPage = () => {
 
 
 
-  export default ShippingPage;
+export default ShippingPage;

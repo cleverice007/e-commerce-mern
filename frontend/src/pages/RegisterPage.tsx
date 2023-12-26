@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import FormContainer from '../components/FormContainer';
 import { AuthState,UserInfo } from '../slices/authSlice';
 
 import { useRegisterMutation } from '../slices/userApiSlice';
