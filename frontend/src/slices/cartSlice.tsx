@@ -38,7 +38,7 @@ const initialState: CartState = localStorage.getItem('cart')
       taxPrice: 0,
       totalPrice: 0,
       shippingAddress: {}, 
-      paymentMethod: 'ECPay',
+      paymentMethod: 'PayPal',
     };
 
 

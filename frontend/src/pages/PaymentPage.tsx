@@ -18,7 +18,7 @@ const PaymenPage = () => {
       }
     }, [navigate, shippingAddress]);
   
-    const [paymentMethod, setPaymentMethod] = useState('ECPay');
+    const [paymentMethod, setPaymentMethod] = useState('PayPal');
   
     const dispatch = useDispatch();
   
