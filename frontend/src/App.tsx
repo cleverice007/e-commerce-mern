@@ -1,4 +1,6 @@
 import React from 'react';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -12,12 +14,27 @@ import PaymentPage from './pages/PaymentPage';
 import PrivateRoute from './components/PrivateRoute';
 import PlaceOrderPage from './pages/PlacehOrderPage';
 import OrderPage from './pages/OrderPage';
+import { logout } from './slices/authSlice';
+
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
 const App: React.FC = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const expirationTimeString = localStorage.getItem('expirationTime');
+    if (expirationTimeString) {
+      const expirationTime = parseInt(expirationTimeString, 10); 
+      const currentTime = new Date().getTime();
+      if (currentTime > expirationTime) {
+        dispatch(logout());
+      }
+    }
+  }, [dispatch]);
+  
   return (
     <Router>
       <ToastContainer />
