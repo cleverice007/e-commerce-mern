@@ -9,12 +9,11 @@ import { Provider } from 'react-redux';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 const SCRIPT_PROVIDER_OPTIONS = {
-  clientId: process.env.PAYPAL_CLIENT_ID!,
-};
+  clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID!, 
+  currency: 'USD',};
 
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Failed to find the root element');
-
 const root = ReactDOM.createRoot(rootElement);
 
 root.render(
