@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 const SCRIPT_PROVIDER_OPTIONS = {
-  clientId: process.env.REACT_APP_PAYPAL_CLIENT_ID!,
+  clientId: process.env.PAYPAL_CLIENT_ID!,
 };
 
 const rootElement = document.getElementById('root');
@@ -20,7 +20,8 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <PayPalScriptProvider deferLoading={true} options={SCRIPT_PROVIDER_OPTIONS}>
+      <PayPalScriptProvider options={SCRIPT_PROVIDER_OPTIONS}>
+        <App />
       </PayPalScriptProvider>
     </Provider>
   </React.StrictMode>

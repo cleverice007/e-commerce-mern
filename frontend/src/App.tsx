@@ -58,7 +58,6 @@ const App: React.FC = () => {
             </Routes>
           </div>
         </main>
-        <Footer />
       </div>
     </Router>
   );
