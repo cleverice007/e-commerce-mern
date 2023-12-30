@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { OrderItem } from '../slices/orderApiSlice';
 import { AuthState } from '../slices/authSlice';
 import {
     useGetOrderDetailsQuery,
@@ -11,13 +12,7 @@ import {
 } from '../slices/orderApiSlice'; import Message from '../components/Message';
 
 const OrderPage: React.FC = () => {
-    interface OrderItem {
-        name: string;
-        qty: number;
-        image: string;
-        price: number;
-        product: string; // product id
-    }
+ 
 
     const { id: orderId } = useParams<{ id: string }>();
 

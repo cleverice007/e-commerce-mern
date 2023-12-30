@@ -1,6 +1,25 @@
 import { apiSlice } from './apiSlice';
 import { ORDERS_URL,PAYPAL_URL } from '../constants';
 
+interface OrderItem {
+  name: string;
+  qty: number;
+  image: string;
+  price: number;
+  product: string; // product id
+}
+
+ interface Order {
+  _id: string;
+  createdAt: string;
+  totalPrice: number;
+  isPaid: boolean;
+  paidAt?: string;
+  isDelivered: boolean;
+  deliveredAt?: string;
+  orderItems: OrderItem[];
+}
+
 export const orderApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createOrder: builder.mutation({
@@ -45,3 +64,5 @@ export const {
   useGetPaypalClientIdQuery,
   useGetMyOrdersQuery,
 } = orderApiSlice;
+
+export type { Order, OrderItem };
