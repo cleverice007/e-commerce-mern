@@ -77,10 +77,11 @@ const OrderPage: React.FC = () => {
         toast.success('Order is paid');
     }
 
-    function onError(err: Error) {
-        toast.error(err.message);
+    function onError(err: Record<string, unknown>) {
+        const message = err.message as string;  // 斷言message是字符串
+        toast.error(message || "An unknown error occurred");
     }
-
+    
 
     function createOrder(data: any, actions: any): Promise<any> {
         return actions.order
@@ -211,6 +212,33 @@ const OrderPage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
+                        {!order.isPaid && (
+                            <div className="list-group-item">
+                                {loadingPay && <div>Loading...</div>}
+
+                                {isPending ? (
+                                    <div>Loading...</div>
+                                ) : (
+                                    <div>
+                                        <button
+                                            className="mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                            onClick={onApproveTest}
+                                        >
+                                            Test Pay Order
+                                        </button>
+
+                                        <div>
+                                            <PayPalButtons
+                                                createOrder={createOrder}
+                                                onApprove={onApprove}
+                                                onError={onError}
+                                            ></PayPalButtons>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                     </>
                 )}
             </div>
