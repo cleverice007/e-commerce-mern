@@ -4,6 +4,7 @@ import {
   addOrderItems,
   getOrderById,
   getMyOrders,
+  updateOrderToPaid,
 }
  from '../controllers/orderController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
