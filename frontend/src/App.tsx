@@ -13,6 +13,7 @@ import ShippingPage from './pages/ShippingPage';
 import PaymentPage from './pages/PaymentPage';
 import PrivateRoute from './components/PrivateRoute';
 import PlaceOrderPage from './pages/PlacehOrderPage';
+import ProfilePage from './pages/ProfilePage';
 import OrderPage from './pages/OrderPage';
 import { logout } from './slices/authSlice';
 
@@ -54,6 +55,7 @@ const App: React.FC = () => {
                 <Route path='/payment' element={<PaymentPage />} />
                 <Route path='/placeorder' element={<PlaceOrderPage />} />
                 <Route path='/order/:id' element={<OrderPage />} />
+                <Route path='/profile' element={<ProfilePage />} />
               </Route>
             </Routes>
           </div>
