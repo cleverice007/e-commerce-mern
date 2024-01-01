@@ -7,13 +7,10 @@ import User from '../models/userModel.js';
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    console.log('Received for authentication:', { email, password });
   
     const user = await User.findOne({ email });
-    console.log('User found:', user);
   
     if (user && (await user.matchPassword(password))) {
-      console.log('Password match success');
       generateToken(res, user._id);
   
       res.json({
@@ -23,7 +20,6 @@ const authUser = asyncHandler(async (req, res) => {
         isAdmin: user.isAdmin,
       });
     } else {
-      console.log('Password match failure');
       res.status(401);
       throw new Error('Invalid email or password');
     }

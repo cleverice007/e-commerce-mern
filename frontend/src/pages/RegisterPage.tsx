@@ -34,15 +34,12 @@ const RegisterPage: React.FC = () => {
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   
-    console.log('Registering:', { name, email, password }); 
   
     try {
       const res = await register({ name, email, password }).unwrap();
-      console.log('Register response:', res); 
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
     } catch (error: unknown) {
-      console.log('Register error:', error); 
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
