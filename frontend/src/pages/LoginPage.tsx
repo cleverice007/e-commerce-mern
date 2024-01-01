@@ -40,37 +40,34 @@ const LoginPage: React.FC = () => {
         navigate(redirect);
       }
     }, [navigate, redirect, userInfo]);
-  
+
     const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        try {
-          const credentials: LoginRequest = {
-            email: email,
-            password: password,
-          };
-      
-          const res = await login(credentials).unwrap();
-      
-          if (res && typeof res === 'object' && 'id' in res && 'name' in res && 'email' in res) {
-            const userInfo: UserInfo = {
-                id: res.id as string,
-                name: res.name as string,
-                email: res.email as string,
-              };
-            dispatch(setCredentials(userInfo));
-          } else {
-            toast.error("Unexpected response format");
-          }
-      
-          navigate(redirect);
-        } catch (error: unknown) {
-          if (isApiError(error)) {
-            toast.error(error.data.message);
-          } else {
-            toast.error("An unexpected error occurred");
-          }
+      e.preventDefault();
+      try {
+        const credentials: LoginRequest = {
+          email: email,
+          password: password,
+        };
+    
+        const res = await login(credentials).unwrap();
+    
+        const userInfo: UserInfo = {
+          id: (res as any).id as string,
+          name: (res as any).name as string,
+          email: (res as any).email as string,
+        };
+    
+        dispatch(setCredentials(userInfo));
+        navigate(redirect);
+      } catch (error: unknown) {
+        if (isApiError(error)) {
+          toast.error(error.data.message);
+        } else {
+          toast.error("An unexpected error occurred");
         }
-      };
+      }
+    };
+    
     return (
         <div className="max-w-md mx-auto my-10 p-8 bg-white shadow-md">
           <h1 className="text-xl font-semibold text-center">Sign In</h1>
