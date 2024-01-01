@@ -40,8 +40,8 @@ const PaymenPage = () => {
                     className="form-radio my-2"
                     type="radio"
                     name="paymentMethod"
-                    value="綠界"
-                    checked={paymentMethod === '綠界'}
+                    value="PayPal"
+                    checked={paymentMethod === 'PayPal'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                   />
                   <span className="ml-2">綠界</span>
