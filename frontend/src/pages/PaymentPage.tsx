@@ -44,7 +44,7 @@ const PaymenPage = () => {
                     checked={paymentMethod === 'PayPal'}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                   />
-                  <span className="ml-2">綠界</span>
+                  <span className="ml-2">PayPal</span>
                 </label>
               </div>
             </div>
