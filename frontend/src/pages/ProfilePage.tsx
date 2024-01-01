@@ -52,11 +52,70 @@ const [name, setName] = useState<string>('');
   };
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="col-span-1">
-        <h2 className="text-2xl font-bold">User Profile</h2>
-        <form onSubmit={submitHandler} className="mt-4">
-        </form>
-      </div>
+    <div className="col-span-1">
+      <h2 className="text-2xl font-bold">User Profile</h2>
+      <form onSubmit={submitHandler} className="mt-4 space-y-4">
+        {/* Name Input */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+          <input
+            type="name"
+            id="name"
+            placeholder="Enter name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+  
+        {/* Email Input */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+  
+        {/* Password Input */}
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+  
+        {/* Confirm Password Input */}
+        <div>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+  
+        {/* Update Button */}
+        <button
+          type="submit"
+          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Update
+        </button>
+      </form>
+    </div>
       <div className="col-span-2">
         <h2 className="text-2xl font-bold">My Orders</h2>
         {isLoading ? (
