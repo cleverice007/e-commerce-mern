@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
-import Footer from './components/Footer';
+import AdminRoute from './components/AdminRoute';
 import HomePage from './pages/HomePage';
 import ProductPage from './pages/ProductPage';
 import LoginPage from './pages/LoginPage';
@@ -15,6 +15,7 @@ import PrivateRoute from './components/PrivateRoute';
 import PlaceOrderPage from './pages/PlaceOrderPage';
 import ProfilePage from './pages/ProfilePage';
 import OrderPage from './pages/OrderPage';
+import OrderListPage from './pages/OrderListPage';
 import { logout } from './slices/authSlice';
 
 
@@ -29,14 +30,14 @@ const App: React.FC = () => {
   useEffect(() => {
     const expirationTimeString = localStorage.getItem('expirationTime');
     if (expirationTimeString) {
-      const expirationTime = parseInt(expirationTimeString, 10); 
+      const expirationTime = parseInt(expirationTimeString, 10);
       const currentTime = new Date().getTime();
       if (currentTime > expirationTime) {
         dispatch(logout());
       }
     }
   }, [dispatch]);
-  
+
   return (
     <Router>
       <ToastContainer />
@@ -56,6 +57,9 @@ const App: React.FC = () => {
                 <Route path='/placeorder' element={<PlaceOrderPage />} />
                 <Route path='/order/:id' element={<OrderPage />} />
                 <Route path='/profile' element={<ProfilePage />} />
+              </Route>
+              <Route path='' element={<AdminRoute />}>
+                <Route path='/admin/orderlist' element={<OrderListPage />} />
               </Route>
             </Routes>
           </div>
