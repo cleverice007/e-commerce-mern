@@ -33,17 +33,16 @@ const RegisterPage: React.FC = () => {
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
+  
+    console.log('Registering:', { name, email, password }); 
+  
     try {
       const res = await register({ name, email, password }).unwrap();
+      console.log('Register response:', res); 
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
     } catch (error: unknown) {
+      console.log('Register error:', error); 
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
@@ -51,6 +50,7 @@ const RegisterPage: React.FC = () => {
       }
     }
   };
+  
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-xl font-bold">Register</h1>
