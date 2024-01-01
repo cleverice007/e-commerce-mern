@@ -34,7 +34,6 @@ const authUser = asyncHandler(async (req, res) => {
   // @access  Public
   const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password } = req.body;
-    console.log('Received for registration:', { name, email, password }); // 查看收到的数据
   
     const userExists = await User.findOne({ email });
   
@@ -48,7 +47,6 @@ const authUser = asyncHandler(async (req, res) => {
       email,
       password,
     });
-    console.log('User created with hashed password:', user);
   
     if (user) {
       generateToken(res, user._id);
@@ -58,6 +56,7 @@ const authUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        password: user.password,
       });
     } else {
       res.status(400);
