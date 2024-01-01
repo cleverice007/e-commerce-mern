@@ -18,7 +18,10 @@ interface OrderItem {
   isDelivered: boolean;
   deliveredAt?: string;
   orderItems: OrderItem[];
-}
+  user: {
+    _id: string;
+    name: string;
+  };}
 
 export const orderApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
