@@ -12,7 +12,7 @@ import RegisterPage from './pages/RegisterPage';
 import ShippingPage from './pages/ShippingPage';
 import PaymentPage from './pages/PaymentPage';
 import PrivateRoute from './components/PrivateRoute';
-import PlaceOrderPage from './pages/PlacehOrderPage';
+import PlaceOrderPage from './pages/PlaceOrderPage';
 import ProfilePage from './pages/ProfilePage';
 import OrderPage from './pages/OrderPage';
 import { logout } from './slices/authSlice';
