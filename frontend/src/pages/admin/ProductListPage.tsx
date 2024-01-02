@@ -1,10 +1,10 @@
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
-import Message from '../components/Message';
-import { useGetProductsQuery } from '../slices/productSlice';
+import Message from '../../components/Message';
+import { useGetProductsQuery } from '../../slices/productSlice';
 import { Link } from 'react-router-dom';
 
 
-const ProductListPage = () => {
+const ProductListPage: React.FC = () => {
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
     const deleteHandler = (id: string) => { };
 

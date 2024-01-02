@@ -15,8 +15,8 @@ import PrivateRoute from './components/PrivateRoute';
 import PlaceOrderPage from './pages/PlaceOrderPage';
 import ProfilePage from './pages/ProfilePage';
 import OrderPage from './pages/OrderPage';
-import OrderListPage from './pages/OrderListPage';
-import ProductListPage from './pages/ProductListPage';
+import OrderListPage from './pages/admin/OrderListPage';
+import ProductListPage from './pages/admin/ProductListPage';
 import { logout } from './slices/authSlice';
 
 

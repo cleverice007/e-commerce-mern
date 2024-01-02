@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';    
-import { useGetOrdersQuery } from '../slices/orderApiSlice';
-import { Order } from '../slices/orderApiSlice';
+import { useGetOrdersQuery } from '../../slices/orderApiSlice';
+import { Order } from '../../slices/orderApiSlice';
 
 
-const OrderListPage = () => {
+const OrderListPage: React.FC = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery({});
 
 return (
