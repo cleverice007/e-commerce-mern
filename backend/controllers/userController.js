@@ -44,6 +44,7 @@ const authUser = asyncHandler(async (req, res) => {
       password,
       isAdmin,
     });
+    console.log(user);
   
     if (user) {
       generateToken(res, user._id);

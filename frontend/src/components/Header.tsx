@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaShoppingCart, FaUser, FaSearch } from 'react-icons/fa';
+import { FaShoppingCart, FaUser, FaSearch,FaCaretDown } from 'react-icons/fa';
 import { useSelector,useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -64,6 +64,20 @@ const Header: React.FC = () => {
               <FaUser className="mr-1" /> Sign In
             </Link>
           )}
+               {userInfo && userInfo.isAdmin && (
+          <div className="relative inline-block text-left">
+            <button className="flex items-center mx-3 focus:outline-none focus:ring">
+              Admin <FaCaretDown className="ml-1" />
+            </button>
+            <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                <Link to="/admin/orderlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                  Orders
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
         </div>
       </nav>
     </header>

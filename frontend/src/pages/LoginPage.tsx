@@ -55,6 +55,7 @@ const LoginPage: React.FC = () => {
           id: (res as any).id as string,
           name: (res as any).name as string,
           email: (res as any).email as string,
+          isAdmin: (res as any).isAdmin as boolean,
         };
     
         dispatch(setCredentials(userInfo));
