@@ -6,11 +6,12 @@ import { toast } from 'react-toastify';
 import {
   useGetProductDetailsQuery,
   useUpdateProductMutation,
+  useUploadProductImageMutation,
 } from '../../slices/productSlice';
 
 const ProductEditPage: React.FC = () => {
-    const navigate = useNavigate();
-    const { id: productId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { id: productId } = useParams<{ id: string }>();
 
 
   const [name, setName] = useState<string>('');
@@ -21,12 +22,15 @@ const ProductEditPage: React.FC = () => {
   const [countInStock, setCountInStock] = useState<number>(0);
   const [description, setDescription] = useState<string>('');
 
-  const { data: product, isLoading, error,refetch } = useGetProductDetailsQuery(
+  const { data: product, isLoading, error, refetch } = useGetProductDetailsQuery(
     productId || 'undefined'
   );
 
   const [updateProduct, { isLoading: loadingUpdate }] =
     useUpdateProductMutation();
+
+  const [uploadProductImage, { isLoading: loadingUpload }] =
+    useUploadProductImageMutation();
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,9 +49,25 @@ const ProductEditPage: React.FC = () => {
       refetch();
       navigate('/admin/productlist');
     } catch (err) {
-        const error = err as { data?: { message?: string }, error?: string };
-        toast.error(error.data?.message || error.error || "An unknown error occurred");    }
+      const error = err as { data?: { message?: string }, error?: string };
+      toast.error(error.data?.message || error.error || "An unknown error occurred");
+    }
   };
+
+  const uploadFileHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formData = new FormData();
+    if (e.target.files && e.target.files.length > 0) {
+      formData.append('image', e.target.files[0]);
+      try {
+        const res = await uploadProductImage(formData).unwrap();
+        toast.success(res.message);
+        setImage(res.image);
+      } catch (err) {
+        toast.error((err as Error)?.message || 'An error occurred');
+      }
+    }
+  };
+
 
   useEffect(() => {
     if (product) {
@@ -60,7 +80,7 @@ const ProductEditPage: React.FC = () => {
       setDescription(product.description);
     }
   }, [product]);
-  
+
   return (
     <div>
       <Link to='/admin/productlist' className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
@@ -101,7 +121,32 @@ const ProductEditPage: React.FC = () => {
               />
             </div>
 
-            {/* IMAGE INPUT PLACEHOLDER */}
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="image">
+                Image
+              </label>
+              <input
+                type="text"
+                id="image"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mb-2"
+                placeholder="Enter image url"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+              />
+              <input
+                type="file"
+                id="file"
+                className="hidden"
+                onChange={uploadFileHandler}
+              />
+              <label
+                htmlFor="file"
+                className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-indigo-500 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer"
+              >
+                Choose File
+              </label>
+              {loadingUpload && <div>Loading...</div>}
+            </div>
 
             <div className='mb-4'>
               <label className='block text-gray-700 text-sm font-bold mb-2' htmlFor='brand'>
@@ -167,5 +212,5 @@ const ProductEditPage: React.FC = () => {
     </div>
   );
 };
-  
-  export default ProductEditPage;
+
+export default ProductEditPage;
