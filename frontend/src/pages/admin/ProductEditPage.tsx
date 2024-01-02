@@ -10,6 +10,8 @@ import {
 
 const ProductEditPage: React.FC = () => {
     const navigate = useNavigate();
+    const { id: productId } = useParams<{ id: string }>();
+
 
   const [name, setName] = useState<string>('');
   const [price, setPrice] = useState<number>(0);
@@ -19,12 +21,9 @@ const ProductEditPage: React.FC = () => {
   const [countInStock, setCountInStock] = useState<number>(0);
   const [description, setDescription] = useState<string>('');
 
-  const {
-    data: product,
-    isLoading,
-    refetch,
-    error,
-  } = useGetProductDetailsQuery(productId);
+  const { data: product, isLoading, error,refetch } = useGetProductDetailsQuery(
+    productId || 'undefined'
+  );
 
   const [updateProduct, { isLoading: loadingUpdate }] =
     useUpdateProductMutation();
