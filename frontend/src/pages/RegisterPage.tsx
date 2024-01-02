@@ -33,10 +33,10 @@ const RegisterPage: React.FC = () => {
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
-  
+
+
     try {
-      const res = await register({ name, email, password }).unwrap();
+      const res = await register({ name, email, password,isAdmin }).unwrap();
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
     } catch (error: unknown) {
@@ -47,7 +47,7 @@ const RegisterPage: React.FC = () => {
       }
     }
   };
-  
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-xl font-bold">Register</h1>
@@ -108,19 +108,19 @@ const RegisterPage: React.FC = () => {
           />
         </div>
         <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="isAdmin">
-          Admin
-        </label>
-        <select
-          id="isAdmin"
-          value={String(isAdmin)}
-          onChange={(e) => setIsAdmin(e.target.value === 'true')}
-          className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
-          <option value="false">False</option>
-          <option value="true">True</option>
-        </select>
-      </div>
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="isAdmin">
+            Admin
+          </label>
+          <select
+            id="isAdmin"
+            value={String(isAdmin)} 
+            onChange={(e) => setIsAdmin(e.target.value === 'true')} 
+            className="..."
+          >
+            <option value="false">False</option>
+            <option value="true">True</option>
+          </select>
+        </div>
 
 
         <button
