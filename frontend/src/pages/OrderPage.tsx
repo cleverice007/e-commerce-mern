@@ -9,10 +9,12 @@ import {
     useGetOrderDetailsQuery,
     usePayOrderMutation,
     useGetPaypalClientIdQuery,
-} from '../slices/orderApiSlice'; import Message from '../components/Message';
+    useDeliverOrderMutation,
+} from '../slices/orderApiSlice';
+import Message from '../components/Message';
 
 const OrderPage: React.FC = () => {
- 
+
 
     const { id: orderId } = useParams<{ id: string }>();
 
@@ -25,11 +27,21 @@ const OrderPage: React.FC = () => {
 
     const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
 
+    const [deliverOrder, { isLoading: loadingDeliver }] =
+        useDeliverOrderMutation();
+
+
     const { userInfo } = useSelector((state: { auth: AuthState }) => state.auth);
 
     const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
     const { data: paypal, isLoading: loadingPayPal, error: errorPayPal } = useGetPaypalClientIdQuery(undefined);
+
+    const deliverHandler = async () => {
+        await deliverOrder(orderId);
+        refetch();
+    };
+
 
 
     useEffect(() => {
@@ -76,7 +88,7 @@ const OrderPage: React.FC = () => {
         const message = err.message as string;  // 斷言message是字符串
         toast.error(message || "An unknown error occurred");
     }
-    
+
 
     function createOrder(data: any, actions: any): Promise<any> {
         return actions.order
@@ -231,6 +243,20 @@ const OrderPage: React.FC = () => {
                                         </div>
                                     </div>
                                 )}
+                            </div>
+
+                        )}
+                        {loadingDeliver && <div>Loading...</div>}
+
+                        {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                            <div className="mt-4">
+                                <button
+                                    type="button"
+                                    className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                    onClick={deliverHandler}
+                                >
+                                    Mark As Delivered
+                                </button>
                             </div>
                         )}
 
