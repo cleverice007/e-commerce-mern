@@ -16,6 +16,7 @@ import PlaceOrderPage from './pages/PlaceOrderPage';
 import ProfilePage from './pages/ProfilePage';
 import OrderPage from './pages/OrderPage';
 import OrderListPage from './pages/OrderListPage';
+import ProductListPage from './pages/ProductListPage';
 import { logout } from './slices/authSlice';
 
 
@@ -60,6 +61,7 @@ const App: React.FC = () => {
               </Route>
               <Route path='' element={<AdminRoute />}>
                 <Route path='/admin/orderlist' element={<OrderListPage />} />
+                <Route path='/admin/productlist' element={<ProductListPage />} />
               </Route>
             </Routes>
           </div>
