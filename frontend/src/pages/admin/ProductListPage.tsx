@@ -1,14 +1,27 @@
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import Message from '../../components/Message';
-import { useGetProductsQuery } from '../../slices/productSlice';
+import { useGetProductsQuery , useDeleteProductMutation} from '../../slices/productSlice';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 const ProductListPage: React.FC = () => {
     const { data: products, isLoading, error, refetch } = useGetProductsQuery();
-    const deleteHandler = (id: string) => { };
+    const [deleteProduct, { isLoading: loadingDelete }] =
+    useDeleteProductMutation();
 
-
+    const deleteHandler = async (id:string) => {
+        if (window.confirm('Are you sure')) {
+          try {
+            await deleteProduct(id);
+            refetch();
+          } catch (err) {
+            const error = err as { data?: { message?: string }, error?: string };
+            toast.error(error.data?.message || error.error || "An unknown error occurred");
+          }
+        }
+      };
+      
 
     return (
         <>
