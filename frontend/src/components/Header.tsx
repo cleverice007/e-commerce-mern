@@ -74,6 +74,9 @@ const Header: React.FC = () => {
                 <Link to="/admin/orderlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
                   Orders
                 </Link>
+                <Link to="/admin/userlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                  Users
+                </Link>
               </div>
             </div>
           </div>
