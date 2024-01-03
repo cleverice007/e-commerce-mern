@@ -18,6 +18,7 @@ import OrderPage from './pages/OrderPage';
 import OrderListPage from './pages/admin/OrderListPage';
 import ProductListPage from './pages/admin/ProductListPage';
 import ProductEditPage from './pages/admin/ProductEditPage';
+import UserListPage from './pages/admin/UserListPage';
 import { logout } from './slices/authSlice';
 
 
@@ -64,6 +65,7 @@ const App: React.FC = () => {
                 <Route path='/admin/orderlist' element={<OrderListPage />} />
                 <Route path='/admin/productlist' element={<ProductListPage />} />
                 <Route path='/admin/product/:id/edit' element={<ProductEditPage />} />
+                <Route path='/admin/userlist' element={<UserListPage />} />
               </Route>
             </Routes>
           </div>
