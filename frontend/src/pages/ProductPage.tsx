@@ -3,24 +3,31 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import Rating from '../components/Rating';
 import { useState } from 'react';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
-import { useGetProductDetailsQuery } from '../slices/productSlice';
+import { useGetProductDetailsQuery,  useCreateReviewMutation} from '../slices/productSlice';
+import { toast } from 'react-toastify';
 import { addToCart } from '../slices/cartSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
+import { AuthState } from '../slices/authSlice';
+
 
 const ProductPage: React.FC = () => {
   const { id: productId } = useParams<{ id: string }>();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState<number>(1);
+  const [rating, setRating] = useState<number>(0);
+  const [comment, setComment] = useState<string>('');
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product!, qty }));
     navigate('/cart');
   };
 
-  const { data: product, isLoading, error } = useGetProductDetailsQuery(
-    productId || 'undefined'
-  );
+  const { data: product, isLoading,
+     error, refetch,
+  } = useGetProductDetailsQuery( productId || 'undefined');
+
+  const { userInfo } = useSelector((state: { auth: AuthState }) => state.auth);
 
   if (isLoading) {
     return <div>Loading...</div>;

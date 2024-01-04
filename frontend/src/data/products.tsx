@@ -1,5 +1,14 @@
+interface Review {
+  _id: string;
+  name: string;
+  rating: number;
+  comment: string;
+  user: string;
+  createdAt: Date; 
+}
+
 interface Product {
-    _id: string;
+  _id: string;
     name: string;
     image: string;
     description: string;
@@ -9,6 +18,7 @@ interface Product {
     countInStock: number;
     rating: number;
     numReviews: number;
+    reviews?: Review[];
   }
 
   const fakeProducts: Product[] = [
