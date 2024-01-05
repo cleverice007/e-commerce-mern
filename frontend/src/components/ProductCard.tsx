@@ -2,10 +2,17 @@ import React from 'react';
 import Rating from './Rating';
 import { Link } from 'react-router-dom';
 import { useGetProductsQuery } from '../slices/productSlice';
-import {Product} from '../data/products'
+import { useParams } from 'react-router-dom';
+import { Product } from '../data/products'
+import Paginate from './Paginate';
 
 const ProductCard: React.FC = () => {
-  const { data: products, isLoading, error } = useGetProductsQuery() as { data: Product[], isLoading: boolean, error: unknown };
+  const { pageNumber } = useParams();
+  const parsedPageNumber = Number(pageNumber);
+
+  const { data, isLoading, error } = useGetProductsQuery({ pageNumber: parsedPageNumber });
+
+
 
   return (
     isLoading ? (
@@ -14,7 +21,7 @@ const ProductCard: React.FC = () => {
       <div>error</div>
     ) : (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {products?.map((product: Product) => (
+        {data?.products.map((product: Product) => (
           <div key={product._id} className="max-w-sm rounded overflow-hidden shadow-lg">
             <img className="w-full" src={product.image} alt={product.name} />
             <div className="px-6 py-4">
@@ -31,10 +38,11 @@ const ProductCard: React.FC = () => {
             </div>
           </div>
         ))}
+        {data && <Paginate pages={data.pages} page={data.page} isAdmin={true} />}
       </div>
     )
   );
-  };
-  
-  
+};
+
+
 export default ProductCard;

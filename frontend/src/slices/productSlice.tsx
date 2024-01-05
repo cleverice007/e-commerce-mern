@@ -1,13 +1,17 @@
 import { PRODUCTS_URL } from '../constants';
 import { apiSlice } from './apiSlice';
-import { Product } from '../data/products';
+import { ProductData,Product } from '../data/products';
 
 export const productSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getProducts: builder.query<Product[], void>({
-      query: () => PRODUCTS_URL,
+    getProducts: builder.query<ProductData, { pageNumber: number }>({
+      query: ({ pageNumber }) => ({
+        url: PRODUCTS_URL,
+        params: { pageNumber },
+      }),
       keepUnusedDataFor: 5,
     }),
+    
     getProductDetails: builder.query<Product, string>({
       query: (productId) => `${PRODUCTS_URL}/${productId}`,
       keepUnusedDataFor: 5,

@@ -21,6 +21,12 @@ interface Product {
     reviews?: Review[];
   }
 
+  interface ProductData {
+    products: Product[];
+    page: number;
+    pages: number;
+  }
+
   const fakeProducts: Product[] = [
     {
       _id: '1',
@@ -90,5 +96,5 @@ interface Product {
   ];
 
 export { fakeProducts };
-export type { Product };
+export type { Product, ProductData, Review };
 
