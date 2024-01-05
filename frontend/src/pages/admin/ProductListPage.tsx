@@ -3,11 +3,19 @@ import Message from '../../components/Message';
 import { useGetProductsQuery , useDeleteProductMutation} from '../../slices/productSlice';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
 
 const ProductListPage: React.FC = () => {
-    const { data: products, isLoading, error, refetch } = useGetProductsQuery();
-    const [deleteProduct, { isLoading: loadingDelete }] =
+    const { pageNumber ,keyword} = useParams();
+  const parsedPageNumber = Number(pageNumber);
+
+  const { data, isLoading, error,refetch } = useGetProductsQuery({ pageNumber: parsedPageNumber
+    ,keyword: keyword ? keyword : "",
+  });
+
+
+      const [deleteProduct, { isLoading: loadingDelete }] =
     useDeleteProductMutation();
 
     const deleteHandler = async (id:string) => {
@@ -50,8 +58,8 @@ const ProductListPage: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {products ? (
-                                products.map((product) => (
+                            {data? (
+                                data?.products.map((product) => (
                                     <tr key={product._id} className="hover:bg-gray-100">
                                         <td className="border border-gray-300 px-4 py-2">{product._id}</td>
                                         <td className="border border-gray-300 px-4 py-2">{product.name}</td>
