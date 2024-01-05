@@ -51,6 +51,11 @@ const App: React.FC = () => {
           <div className="container mx-auto">
             <Routes>
               <Route path='/page/:pageNumber' element={<HomePage />} />
+              <Route path='/search/:keyword' element={<HomePage />} />
+              <Route
+                path='/search/:keyword/page/:pageNumber'
+                element={<HomePage/>}
+              />
               <Route path="/products/:id" element={<ProductPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/cart" element={<CartPage />} />
@@ -67,7 +72,7 @@ const App: React.FC = () => {
                 <Route
                   path='/admin/productlist/:pageNumber'
                   element={<ProductListPage />}
-                />                
+                />
                 <Route path='/admin/product/:id/edit' element={<ProductEditPage />} />
                 <Route path='/admin/userlist' element={<UserListPage />} />
                 <Route path='/admin/user/:id/edit' element={<UserEditPage />} />

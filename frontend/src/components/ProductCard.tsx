@@ -7,10 +7,12 @@ import { Product } from '../data/products'
 import Paginate from './Paginate';
 
 const ProductCard: React.FC = () => {
-  const { pageNumber } = useParams();
+  const { pageNumber ,keyword} = useParams();
   const parsedPageNumber = Number(pageNumber);
 
-  const { data, isLoading, error } = useGetProductsQuery({ pageNumber: parsedPageNumber });
+  const { data, isLoading, error } = useGetProductsQuery({ pageNumber: parsedPageNumber
+    ,keyword: keyword ? keyword : "",
+  });
 
 
 
@@ -38,7 +40,9 @@ const ProductCard: React.FC = () => {
             </div>
           </div>
         ))}
-        {data && <Paginate pages={data.pages} page={data.page} isAdmin={true} />}
+        {data && <Paginate pages={data.pages} page={data.page} 
+        keyword={keyword ? keyword : ''}
+/>}
       </div>
     )
   );

@@ -25,6 +25,7 @@ interface Product {
     products: Product[];
     page: number;
     pages: number;
+    keyword?: string;
   }
 
   const fakeProducts: Product[] = [
