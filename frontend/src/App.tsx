@@ -50,7 +50,7 @@ const App: React.FC = () => {
         <main className="flex-1 py-3">
           <div className="container mx-auto">
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path='/page/:pageNumber' element={<HomePage />} />
               <Route path="/products/:id" element={<ProductPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/cart" element={<CartPage />} />
@@ -64,7 +64,10 @@ const App: React.FC = () => {
               </Route>
               <Route path='' element={<AdminRoute />}>
                 <Route path='/admin/orderlist' element={<OrderListPage />} />
-                <Route path='/admin/productlist' element={<ProductListPage />} />
+                <Route
+                  path='/admin/productlist/:pageNumber'
+                  element={<ProductListPage />}
+                />                
                 <Route path='/admin/product/:id/edit' element={<ProductEditPage />} />
                 <Route path='/admin/userlist' element={<UserListPage />} />
                 <Route path='/admin/user/:id/edit' element={<UserEditPage />} />
