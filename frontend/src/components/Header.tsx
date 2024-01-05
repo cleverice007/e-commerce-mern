@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaShoppingCart, FaUser, FaSearch,FaCaretDown } from 'react-icons/fa';
-import { useSelector,useDispatch } from 'react-redux';
+import { FaShoppingCart, FaUser, FaSearch, FaCaretDown } from 'react-icons/fa';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { CartState } from '../slices/cartSlice';  
-import {UserInfo, AuthState,logout} from '../slices/authSlice'; 
+import { CartState } from '../slices/cartSlice';
+import { UserInfo, AuthState, logout } from '../slices/authSlice';
 import { useLogoutMutation } from '../slices/userApiSlice';
+import SearchBox from './SearchBox';
+
 const Header: React.FC = () => {
 
   const { cartItems } = useSelector((state: { cart: CartState }) => state.cart);
@@ -30,14 +32,8 @@ const Header: React.FC = () => {
         <div className="flex items-center flex-grow">
           <Link to="/" className="text-xl font-bold mr-4">E-commerce</Link>
           <div className="flex items-center bg-white text-gray-800 rounded">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="px-2 py-1 rounded-l"
-            />
-            <button className="p-2 rounded-r bg-blue-500 text-white">
-              <FaSearch />
-            </button>
+            <SearchBox />
+            <FaSearch />
           </div>
         </div>
         <div className="flex items-center">
@@ -64,23 +60,23 @@ const Header: React.FC = () => {
               <FaUser className="mr-1" /> Sign In
             </Link>
           )}
-               {userInfo && userInfo.isAdmin && (
-          <div className="relative inline-block text-left">
-            <button className="flex items-center mx-3 focus:outline-none focus:ring">
-              Admin <FaCaretDown className="ml-1" />
-            </button>
-            <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                <Link to="/admin/orderlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                  Orders
-                </Link>
-                <Link to="/admin/userlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                  Users
-                </Link>
+          {userInfo && userInfo.isAdmin && (
+            <div className="relative inline-block text-left">
+              <button className="flex items-center mx-3 focus:outline-none focus:ring">
+                Admin <FaCaretDown className="ml-1" />
+              </button>
+              <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                  <Link to="/admin/orderlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                    Orders
+                  </Link>
+                  <Link to="/admin/userlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                    Users
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
         </div>
       </nav>
     </header>
