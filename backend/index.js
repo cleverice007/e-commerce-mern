@@ -35,17 +35,35 @@ app.use(notFound);
 app.use(errorHandler);
 
 const __dirname = path.resolve();
-
 console.log("Current directory:", __dirname);
 
 if (process.env.NODE_ENV === 'production') {
   const buildPath = path.join(__dirname, '../frontend/build');
   console.log("Serving static files from:", buildPath);
 
+  const fs = require('fs');
+  fs.readdir(buildPath, (err, files) => {
+    if (err) {
+      console.error("Cannot read build directory:", err);
+    } else {
+      console.log("Files in build directory:", files);
+    }
+  });
+
   app.use(express.static(buildPath));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(buildPath, 'index.html'));
+    const indexPath = path.resolve(buildPath, 'index.html');
+    console.log("Serving index.html from:", indexPath);
+    
+    fs.access(indexPath, fs.constants.F_OK, (err) => {
+      if (err) {
+        console.error("index.html not found:", err);
+      } else {
+        console.log("index.html exists, sending file...");
+        res.sendFile(indexPath);
+      }
+    });
   });
 } else {
   app.get('/', (req, res) => {
