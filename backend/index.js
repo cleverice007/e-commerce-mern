@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import { promises as fs } from 'fs';
 import connectDB from './config/db.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -34,36 +35,34 @@ app.get('/api/config/paypal', (req, res) =>
 app.use(notFound);
 app.use(errorHandler);
 
-const __dirname = path.resolve();
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 console.log("Current directory:", __dirname);
 
 if (process.env.NODE_ENV === 'production') {
   const buildPath = path.join(__dirname, '../frontend/build');
   console.log("Serving static files from:", buildPath);
 
-  const fs = require('fs');
-  fs.readdir(buildPath, (err, files) => {
-    if (err) {
-      console.error("Cannot read build directory:", err);
-    } else {
-      console.log("Files in build directory:", files);
-    }
-  });
+  // 使用 promises API 的 readdir 和 access 方法
+  fs.readdir(buildPath)
+    .then(files => console.log("Files in build directory:", files))
+    .catch(err => console.error("Cannot read build directory:", err));
 
   app.use(express.static(buildPath));
 
   app.get('*', (req, res) => {
     const indexPath = path.resolve(buildPath, 'index.html');
     console.log("Serving index.html from:", indexPath);
-    
-    fs.access(indexPath, fs.constants.F_OK, (err) => {
-      if (err) {
-        console.error("index.html not found:", err);
-      } else {
+
+    fs.access(indexPath)
+      .then(() => {
         console.log("index.html exists, sending file...");
         res.sendFile(indexPath);
-      }
-    });
+      })
+      .catch(err => {
+        console.error("index.html not found:", err);
+        res.status(404).send('Not found');
+      });
   });
 } else {
   app.get('/', (req, res) => {
