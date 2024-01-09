@@ -35,13 +35,17 @@ app.use(notFound);
 app.use(errorHandler);
 
 const __dirname = path.resolve();
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+console.log("Current directory:", __dirname);
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  const buildPath = path.join(__dirname, '../frontend/build');
+  console.log("Serving static files from:", buildPath);
+
+  app.use(express.static(buildPath));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend/build', 'index.html'));
+    res.sendFile(path.resolve(buildPath, 'index.html'));
   });
 } else {
   app.get('/', (req, res) => {
