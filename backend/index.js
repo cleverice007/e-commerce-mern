@@ -14,8 +14,6 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import { notFound, errorHandler } from './middleware/errordMiddleware.js';
 dotenv.config();
 const port = process.env.PORT || 5000;
-
-
 connectDB();
 
 const app = express();
@@ -35,17 +33,36 @@ app.get('/api/config/paypal', (req, res) =>
 
 
 
-if (process.env.NODE_ENV === 'production') {
-  const __dirname = path.resolve();
-  app.use('/uploads', express.static('/var/data/uploads'));
-  app.use(express.static(path.join(__dirname, '/frontend/build')));
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-  app.get('*', (req, res) =>
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
-  );
+console.log("Current directory:", __dirname);
+
+if (process.env.NODE_ENV === 'production') {
+  const buildPath = path.join(__dirname, '../frontend/build');
+  console.log("Serving static files from:", buildPath);
+
+  // 使用 promises API 的 readdir 和 access 方法
+  fs.readdir(buildPath)
+    .then(files => console.log("Files in build directory:", files))
+    .catch(err => console.error("Cannot read build directory:", err));
+
+  app.use(express.static(buildPath));
+
+  app.get('*', (req, res) => {
+    const indexPath = path.resolve(buildPath, 'index.html');
+    console.log("Serving index.html from:", indexPath);
+
+    fs.access(indexPath)
+      .then(() => {
+        console.log("index.html exists, sending file...");
+        res.sendFile(indexPath);
+      })
+      .catch(err => {
+        console.error("index.html not found:", err);
+        res.status(404).send('Not found');
+      });
+  });
 } else {
-  const __dirname = path.resolve();
-  app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
   app.get('/', (req, res) => {
     res.send('API is running....');
   });
@@ -54,6 +71,6 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () =>
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
-);
+app.listen(port, () => {
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`);
+});
