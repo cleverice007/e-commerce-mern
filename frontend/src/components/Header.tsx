@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState} from 'react';
 import { Link } from 'react-router-dom';
 import { FaShoppingCart, FaUser, FaSearch, FaCaretDown } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,6 +16,11 @@ const Header: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [logoutApiCall] = useLogoutMutation();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   const logoutHandler = async () => {
     try {
@@ -60,11 +65,12 @@ const Header: React.FC = () => {
               <FaUser className="mr-1" /> Sign In
             </Link>
           )}
-          {userInfo && userInfo.isAdmin && (
-            <div className="relative inline-block text-left">
-              <button className="flex items-center mx-3 focus:outline-none focus:ring">
-                Admin <FaCaretDown className="ml-1" />
-              </button>
+        {userInfo && userInfo.isAdmin && (
+          <div className="relative inline-block text-left">
+            <button onClick={toggleDropdown} className="flex items-center mx-3 focus:outline-none focus:ring">
+              Admin <FaCaretDown className="ml-1" />
+            </button>
+            {isDropdownOpen && (
               <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                   <Link to="/admin/orderlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
@@ -75,8 +81,9 @@ const Header: React.FC = () => {
                   </Link>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        )}
         </div>
       </nav>
     </header>
