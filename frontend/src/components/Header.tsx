@@ -17,9 +17,14 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const [logoutApiCall] = useLogoutMutation();
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
+  const toggleAdminDropdown = () => {
+    setIsAdminDropdownOpen(!isAdminDropdownOpen);
+  };
+
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const toggleUserDropdown = () => {
+    setIsUserDropdownOpen(!isUserDropdownOpen);
   };
 
   const logoutHandler = async () => {
@@ -51,26 +56,28 @@ const Header: React.FC = () => {
             )}
           </Link>
           {userInfo ? (
-            <div className="relative">
-              <button className="flex items-center mx-3">
-                <FaUser className="mr-1" /> {userInfo.name}
-              </button>
+          <div className="relative">
+            <button onClick={toggleUserDropdown} className="flex items-center mx-3">
+              <FaUser className="mr-1" /> {userInfo.name}
+            </button>
+            {isUserDropdownOpen && (
               <div className="absolute right-0 bg-white text-gray-800 rounded shadow-lg mt-2 py-1">
                 <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
                 <button onClick={logoutHandler} className="block px-4 py-2 hover:bg-gray-100 text-left w-full">Logout</button>
               </div>
-            </div>
-          ) : (
-            <Link to="/login" className="flex items-center mx-3">
-              <FaUser className="mr-1" /> Sign In
-            </Link>
-          )}
+            )}
+          </div>
+        ) : (
+          <Link to="/login" className="flex items-center mx-3">
+            <FaUser className="mr-1" /> Sign In
+          </Link>
+        )}
         {userInfo && userInfo.isAdmin && (
           <div className="relative inline-block text-left">
-            <button onClick={toggleDropdown} className="flex items-center mx-3 focus:outline-none focus:ring">
+            <button onClick={toggleAdminDropdown} className="flex items-center mx-3 focus:outline-none focus:ring">
               Admin <FaCaretDown className="ml-1" />
             </button>
-            {isDropdownOpen && (
+            {isAdminDropdownOpen && (
               <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                   <Link to="/admin/orderlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
