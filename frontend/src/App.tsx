@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route,Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import AdminRoute from './components/AdminRoute';
 import HomePage from './pages/HomePage';
@@ -50,6 +50,7 @@ const App: React.FC = () => {
         <main className="flex-1 py-3">
           <div className="container mx-auto">
             <Routes>
+            <Route path="/" element={<Navigate replace to="/page/1" />} />
               <Route path='/page/:pageNumber' element={<HomePage />} />
               <Route path='/search/:keyword' element={<HomePage />} />
               <Route
