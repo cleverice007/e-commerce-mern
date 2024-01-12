@@ -8,7 +8,7 @@ import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
-
+import redisClient from './config/redis.js'; 
 
 
 import { notFound, errorHandler } from './middleware/errordMiddleware.js';

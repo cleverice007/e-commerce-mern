@@ -7,6 +7,9 @@ import User from './models/userModel.js';
 import Product from './models/productModel.js';
 import Order from './models/orderModel.js';
 import connectDB from './config/db.js';
+import redisClient from './config/redis.js';
+import { serialize } from './utils/redisHelpers.js';
+
 
 dotenv.config();
 
@@ -19,14 +22,19 @@ const importData = async () => {
     await User.deleteMany();
 
     const createdUsers = await User.insertMany(users);
-
     const adminUser = createdUsers[0]._id;
 
     const sampleProducts = products.map((product) => {
       return { ...product, user: adminUser };
     });
 
-    await Product.insertMany(sampleProducts);
+    for (const product of sampleProducts) {
+      const newProduct = await Product.create(product);
+    
+      const productData = serialize(newProduct.toObject());
+    
+      await redisClient.hSet(`product:${newProduct._id}`, productData);
+    }
 
     console.log('Data Imported!');
     process.exit();
@@ -35,6 +43,8 @@ const importData = async () => {
     process.exit(1);
   }
 };
+
+
 
 const destroyData = async () => {
   try {
