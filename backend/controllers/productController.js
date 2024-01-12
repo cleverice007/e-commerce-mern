@@ -30,13 +30,18 @@ const getProducts = asyncHandler(async (req, res) => {
   // @route   GET /api/products/:id
   // @access  Public
   const getProductById = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
-    if (product) {
-      return res.json(product);
+    // 從 Redis 獲取產品
+    const productData = await redisClient.hGetAll(`product:${req.params.id}`);
+  
+    // 檢查是否找到了產品
+    if (productData && Object.keys(productData).length !== 0) {
+      return res.json(productData);
+    } else {
+      res.status(404);
+      throw new Error('Resource not found');
     }
-    res.status(404);
-    throw new Error('Resource not found');
   });
+  
 
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
