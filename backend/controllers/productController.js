@@ -47,16 +47,23 @@ const getProducts = asyncHandler(async (req, res) => {
 // @route   DELETE /api/products/:id
 // @access  Private/Admin
 const deleteProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const productId = req.params.id;
+  const product = await Product.findById(productId);
 
   if (product) {
+    // 從 MongoDB 刪除產品
     await Product.deleteOne({ _id: product._id });
+
+    // 從 Redis 刪除產品
+    await redisClient.del(`product:${productId}`);
+
     res.json({ message: 'Product removed' });
   } else {
     res.status(404);
     throw new Error('Product not found');
   }
 });
+
 
 
 // @desc    Create new review
