@@ -48,6 +48,9 @@ const authUser = asyncHandler(async (req, res) => {
   
     if (user) {
       generateToken(res, user._id);
+    // serialize user object and store it in Redis
+    const serializedUser = serialize(user.toObject());
+    await redisClient.hSet(`user:${user._id}`, serializedUser);
   
       res.status(201).json({
         _id: user._id,
@@ -77,20 +80,29 @@ const logoutUser = (req, res) => {
 // @route   GET /api/users/profile
 // @access  Private
 const getUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-  
-    if (user) {
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-      });
-    } else {
-      res.status(404);
-      throw new Error('User not found');
-    }
-  });
+  const userId = req.user._id;
+
+  const cachedUser = await redisClient.hGetAll(`user:${userId}`);
+  let user;
+
+  if (cachedUser && Object.keys(cachedUser).length !== 0) {
+    user = deserialize(cachedUser);
+  } else {
+    user = await User.findById(userId);
+  }
+  if (user) {
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
   
   // @desc    Update user profile
   // @route   PUT /api/users/profile
@@ -107,6 +119,10 @@ const getUserProfile = asyncHandler(async (req, res) => {
       }
   
       const updatedUser = await user.save();
+  
+      const { password, ...userDataWithoutPassword } = updatedUser.toObject();
+      const serializedUser = serialize(userDataWithoutPassword);
+      await redisClient.hSet(`user:${updatedUser._id}`, serializedUser);
   
       res.json({
         _id: updatedUser._id,
@@ -132,14 +148,19 @@ const getUserProfile = asyncHandler(async (req, res) => {
   // @route   DELETE /api/users/:id
   // @access  Private/Admin
   const deleteUser = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
+    const userId = req.params.id;
+    const user = await User.findById(userId);
   
     if (user) {
       if (user.isAdmin) {
         res.status(400);
         throw new Error('Can not delete admin user');
       }
-      await User.deleteOne({ _id: user._id });
+  
+      await User.deleteOne({ _id: userId });
+  
+      await redisClient.del(`user:${userId}`);
+  
       res.json({ message: 'User removed' });
     } else {
       res.status(404);
@@ -147,11 +168,21 @@ const getUserProfile = asyncHandler(async (req, res) => {
     }
   });
   
+  
   // @desc    Get user by ID
   // @route   GET /api/users/:id
   // @access  Private/Admin
   const getUserById = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id).select('-password');
+    const userId = req.params.id;
+  
+    const cachedUser = await redisClient.hGetAll(`user:${userId}`);
+    let user;
+  
+    if (cachedUser && Object.keys(cachedUser).length !== 0) {
+      user = deserialize(cachedUser);
+    } else {
+      user = await User.findById(userId).select('-password');
+    }
   
     if (user) {
       res.json(user);
@@ -160,6 +191,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       throw new Error('User not found');
     }
   });
+  
   // @desc    Update user
   // @route   PUT /api/users/:id
   // @access  Private/Admin
@@ -173,6 +205,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
   
       const updatedUser = await user.save();
   
+      const serializedUser = serialize(updatedUser.toObject());
+      await redisClient.hSet(`user:${updatedUser._id}`, serializedUser);
+  
       res.json({
         _id: updatedUser._id,
         name: updatedUser.name,
@@ -184,6 +219,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       throw new Error('User not found');
     }
   });
+  
   
   export {
     authUser,
