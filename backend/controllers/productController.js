@@ -1,5 +1,7 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Product from '../models/productModel.js';
+import redisClient from '../config/redis.js';
+import { serialize,deserialize } from '../utils/redisHelper.js';
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -30,19 +32,27 @@ const getProducts = asyncHandler(async (req, res) => {
   // @route   GET /api/products/:id
   // @access  Public
   const getProductById = asyncHandler(async (req, res) => {
-    // 從 Redis 獲取產品
-    const productData = await redisClient.hGetAll(`product:${req.params.id}`);
+    try {
+      const serializedProductData = await redisClient.hGetAll(`product:${req.params.id}`);
   
-    // 檢查是否找到了產品
-    if (productData && Object.keys(productData).length !== 0) {
-      return res.json(productData);
-    } else {
-      res.status(404);
-      throw new Error('Resource not found');
+      // 檢查是否找到了產品
+      if (serializedProductData && Object.keys(serializedProductData).length !== 0) {
+        // 反序列化產品數據
+        const productData = deserialize(serializedProductData);
+        console.log(`Product with ID ${req.params.id} found in Redis.`);
+        console.log(productData)
+        return res.json(productData);
+      } else {
+        console.log(`Product with ID ${req.params.id} not found in Redis.`);
+        res.status(404);
+        throw new Error('Resource not found');
+      }
+    } catch (error) {
+      console.error('Error fetching product from Redis:', error);
+      res.status(500).json({ message: 'Internal Server Error' });
     }
   });
   
-
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
 // @access  Private/Admin
@@ -71,8 +81,9 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @access  Private
 const createProductReview = asyncHandler(async (req, res) => {
   const { rating, comment } = req.body;
+  const productId = req.params.id;
 
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(productId);
 
   if (product) {
     const alreadyReviewed = product.reviews.find(
@@ -92,14 +103,14 @@ const createProductReview = asyncHandler(async (req, res) => {
     };
 
     product.reviews.push(review);
-
     product.numReviews = product.reviews.length;
-
-    product.rating =
-      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-      product.reviews.length;
+    product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
 
     await product.save();
+
+    const productData = serialize(product.toObject());
+    await redisClient.hSet(`product:${productId}`, productData);
+
     res.status(201).json({ message: 'Review added' });
   } else {
     res.status(404);

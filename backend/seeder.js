@@ -30,11 +30,12 @@ const importData = async () => {
 
     for (const product of sampleProducts) {
       const newProduct = await Product.create(product);
-    
+      console.log('New product object:', newProduct.toObject());
       const productData = serialize(newProduct.toObject());
-    
+      console.log(`Serialized data for product ${newProduct._id}:`, productData);
       await redisClient.hSet(`product:${newProduct._id}`, productData);
     }
+    
 
     console.log('Data Imported!');
     process.exit();

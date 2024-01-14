@@ -1,16 +1,27 @@
 const serialize = (obj) => {
-    return Object.entries(obj).reduce((acc, [key, value]) => {
-      acc.push(key, JSON.stringify(value));
-      return acc;
-    }, []);
-  };
-  
-  const deserialize = (array) => {
-    const obj = {};
-    for (let i = 0; i < array.length; i += 2) {
-      obj[array[i]] = JSON.parse(array[i + 1]);
+  console.log('Serializing:', obj);
+  const serialized = Object.entries(obj).reduce((acc, [key, value]) => {
+    acc.push(key, JSON.stringify(value));
+    return acc;
+  }, []);
+  console.log('Serialized data:', serialized);
+  return serialized;
+};
+
+const deserialize = (obj) => {
+  console.log('Deserializing:', obj);
+  const deserializedObj = {};
+  for (const [key, value] of Object.entries(obj)) {
+    try {
+      deserializedObj[key] = JSON.parse(value);
+    } catch (error) {
+      console.error(`Error deserializing key ${key}:`, error);
+      deserializedObj[key] = value;
     }
-    return obj;
-  };
-  
+  }
+  console.log('Deserialized object:', deserializedObj);
+  return deserializedObj;
+};
+
+
   export { serialize, deserialize };

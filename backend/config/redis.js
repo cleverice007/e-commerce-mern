@@ -8,7 +8,16 @@ const redisClient = createClient({
     password: process.env.REDIS_PW
 });
 
-redisClient.on('error', (err) => console.log('Redis Client Error', err));
+redisClient.on('error', (err) => {
+    console.log('Redis Client Error', err);
+});
+
+// 成功连接时的事件监听器
+redisClient.on('connect', () => {
+    console.log('Redis client connected');
+});
+
 redisClient.connect();
 
 export default redisClient;
+
