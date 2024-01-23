@@ -7,34 +7,43 @@ import redisClient from '../config/redis.js';
 // @route   POST /api/users/auth
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-  
-    const user = await User.findOne({ email });
-  
-    if (user && (await user.matchPassword(password))) {
-      generateToken(res, user._id);
-  
-      res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-      });
-    } else {
-      res.status(401);
-      throw new Error('Invalid email or password');
-    }
-  });
+  const { email, password } = req.body;
+
+  // check if user already exists
+  const emailExists = await redisClient.sIsMember('emails', email);
+  if (!emailExists) {
+    res.status(401);
+    throw new Error('User not exists');
+  }
+
+  const user = await User.findOne({ email });
+
+  // check if user exists and password is correct
+  if (user && (await user.matchPassword(password))) {
+    generateToken(res, user._id);
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } else {
+    res.status(401);
+    throw new Error('Invalid email or password');
+  }
+});
+
   
   // @desc    Register a new user
   // @route   POST /api/users
   // @access  Public
   const registerUser = asyncHandler(async (req, res) => {
-    const { name, email, password,isAdmin } = req.body;
+    const { name, email, password, isAdmin } = req.body;
   
-    const userExists = await User.findOne({ email });
-  
-    if (userExists) {
+    // check if user already exists
+    const emailExists = await redisClient.sIsMember('emails', email);
+    if (emailExists) {
       res.status(400);
       throw new Error('User already exists');
     }
@@ -47,10 +56,13 @@ const authUser = asyncHandler(async (req, res) => {
     });
   
     if (user) {
+      // add email to Redis set
+      await redisClient.sAdd('emails', email);
+  
       generateToken(res, user._id);
-    // serialize user object and store it in Redis
-    const serializedUser = serialize(user.toObject());
-    await redisClient.hSet(`user:${user._id}`, serializedUser);
+      // serialize user object and store it in Redis
+      const serializedUser = serialize(user.toObject());
+      await redisClient.hSet(`user:${user._id}`, serializedUser);
   
       res.status(201).json({
         _id: user._id,
@@ -64,6 +76,7 @@ const authUser = asyncHandler(async (req, res) => {
       throw new Error('Invalid user data');
     }
   });
+  
 
   // @desc    Logout user / clear cookie
 // @route   POST /api/users/logout

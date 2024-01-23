@@ -1,5 +1,7 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
+import redisClient from '../config/redis.js';
+import { serialize, deserialize } from '../utils/redisHelper.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
