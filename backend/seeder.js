@@ -34,8 +34,14 @@ const importData = async () => {
       const productData = serialize(newProduct.toObject());
       console.log(`Serialized data for product ${newProduct._id}:`, productData);
       await redisClient.hSet(`product:${newProduct._id}`, productData);
+
+      // 添加产品评分和 ID 到 Redis 的 Sorted Set
+      const productRating = newProduct.rating;
+      await redisClient.zAdd('productsSortedByRating', {
+        score: productRating,
+        value: newProduct._id.toString(),
+      });
     }
-    
 
     console.log('Data Imported!');
     process.exit();
