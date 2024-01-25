@@ -1,38 +1,41 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Product from '../models/productModel.js';
 import redisClient from '../config/redis.js';
-import { serialize,deserialize } from '../utils/redisHelper.js';
+import { serialize, deserialize } from '../utils/redisHelper.js';
 
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
   try {
-    const pageSize = process.env.PAGINATION_LIMIT;
-    const page = Number(req.query.pageNumber) || 1;
+    const pageSize = parseInt(process.env.PAGINATION_LIMIT, 10);
+    const page = parseInt(req.query.pageNumber, 10) || 1;
 
     console.log('PageSize:', pageSize, 'Page Number:', page);
 
-    // get index of products sorted by rating from Redis
+    // Get the total count of products
+    const totalCount = await redisClient.zCard('productsSortedByRating');
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    // Get indexes of products sorted by rating from Redis for the current page
     const start = (page - 1) * pageSize;
     const stop = page * pageSize - 1;
 
     console.log('Redis Range Query Start:', start, 'Stop:', stop);
-    // use ZRANGEBYSCORE to get product IDs sorted by rating
-    const productIds = await redisClient.ZRANGEBYSCORE('productsSortedByRating', start, stop, 'REV');
+
+    // Use ZRANGE to get product IDs sorted by rating for the current page
+    const productIds = await redisClient.ZRANGE('productsSortedByRating', start, stop);
     console.log('Product IDs:', productIds);
 
-    // get products data from Redis
+    // Retrieve product data from Redis
     const products = [];
     for (const id of productIds) {
-      console.log('Fetching product data for ID:', id);
       const productData = await redisClient.hGetAll(`product:${id}`);
-      console.log('Product Data:', productData);
       products.push(productData);
     }
 
-    console.log('Sending Response with Products:', products.length, 'Page:', page, 'Total Pages:', Math.ceil(productIds.length / pageSize));
-    res.json({ products, page, pages: Math.ceil(productIds.length / pageSize) });
+    console.log('Sending Response with Products:', products.length, 'Page:', page, 'Total Pages:', totalPages);
+    res.json({ products, page, pages: totalPages });
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ message: 'Error fetching products' });
@@ -41,32 +44,32 @@ const getProducts = asyncHandler(async (req, res) => {
 
 
 
-  
-  // @desc    Fetch single product
-  // @route   GET /api/products/:id
-  // @access  Public
-  const getProductById = asyncHandler(async (req, res) => {
-    try {
-      const serializedProductData = await redisClient.hGetAll(`product:${req.params.id}`);
-  
-      // 檢查是否找到了產品
-      if (serializedProductData && Object.keys(serializedProductData).length !== 0) {
-        // 反序列化產品數據
-        const productData = deserialize(serializedProductData);
-        console.log(`Product with ID ${req.params.id} found in Redis.`);
-        console.log(productData)
-        return res.json(productData);
-      } else {
-        console.log(`Product with ID ${req.params.id} not found in Redis.`);
-        res.status(404);
-        throw new Error('Resource not found');
-      }
-    } catch (error) {
-      console.error('Error fetching product from Redis:', error);
-      res.status(500).json({ message: 'Internal Server Error' });
+
+// @desc    Fetch single product
+// @route   GET /api/products/:id
+// @access  Public
+const getProductById = asyncHandler(async (req, res) => {
+  try {
+    const serializedProductData = await redisClient.hGetAll(`product:${req.params.id}`);
+
+    // 檢查是否找到了產品
+    if (serializedProductData && Object.keys(serializedProductData).length !== 0) {
+      // 反序列化產品數據
+      const productData = deserialize(serializedProductData);
+      console.log(`Product with ID ${req.params.id} found in Redis.`);
+      console.log(productData)
+      return res.json(productData);
+    } else {
+      console.log(`Product with ID ${req.params.id} not found in Redis.`);
+      res.status(404);
+      throw new Error('Resource not found');
     }
-  });
-  
+  } catch (error) {
+    console.error('Error fetching product from Redis:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
 // @access  Private/Admin
@@ -132,5 +135,5 @@ const createProductReview = asyncHandler(async (req, res) => {
   }
 });
 
-  
-  export { getProducts, getProductById, deleteProduct, createProductReview };
+
+export { getProducts, getProductById, deleteProduct, createProductReview };

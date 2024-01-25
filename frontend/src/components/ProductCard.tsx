@@ -3,23 +3,22 @@ import Rating from './Rating';
 import { Link } from 'react-router-dom';
 import { useGetProductsQuery } from '../slices/productSlice';
 import { useParams } from 'react-router-dom';
-import { Product } from '../data/products'
+import { Product } from '../data/products';
 import Paginate from './Paginate';
 
 const ProductCard: React.FC = () => {
-  const { pageNumber ,keyword} = useParams();
+  const { pageNumber } = useParams();
   const parsedPageNumber = Number(pageNumber);
 
-  const { data, isLoading, error } = useGetProductsQuery({ pageNumber: parsedPageNumber
-  });
-
+  const { data, isLoading, error } = useGetProductsQuery({ pageNumber: parsedPageNumber });
+  console.log("Total Pages:", data?.pages, "Current Page:", data?.page);
 
 
   return (
     isLoading ? (
       <div>Loading...</div>
     ) : error ? (
-      <div>error</div>
+      <div>Error</div>
     ) : (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {data?.products.map((product: Product) => (
@@ -39,13 +38,10 @@ const ProductCard: React.FC = () => {
             </div>
           </div>
         ))}
-        {data && <Paginate pages={data.pages} page={data.page} 
-        keyword={keyword ? keyword : ''}
-/>}
+        {data && <Paginate pages={data.pages} page={data.page} />}
       </div>
     )
   );
 };
-
 
 export default ProductCard;

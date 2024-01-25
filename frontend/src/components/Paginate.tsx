@@ -5,10 +5,9 @@ interface PaginateProps {
   pages: number;
   page: number;
   isAdmin?: boolean;
-  keyword?: string;
 }
 
-const Paginate: React.FC<PaginateProps> = ({ pages, page, isAdmin = false, keyword }) => {
+const Paginate: React.FC<PaginateProps> = ({ pages, page, isAdmin = false }) => {
   if (pages <= 1) {
     return null;
   }
@@ -20,9 +19,7 @@ const Paginate: React.FC<PaginateProps> = ({ pages, page, isAdmin = false, keywo
           key={x + 1}
           to={
             !isAdmin
-              ? keyword
-                ? `/search/${keyword}/page/${x + 1}`
-                : `/page/${x + 1}`
+              ? `/page/${x + 1}`
               : `/admin/productlist/${x + 1}`
           }>
           <Pagination.Item active={x + 1 === page}>{x + 1}</Pagination.Item>
