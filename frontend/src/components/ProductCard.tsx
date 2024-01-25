@@ -11,7 +11,6 @@ const ProductCard: React.FC = () => {
   const parsedPageNumber = Number(pageNumber);
 
   const { data, isLoading, error } = useGetProductsQuery({ pageNumber: parsedPageNumber
-    ,keyword: keyword ? keyword : "",
   });
 
 

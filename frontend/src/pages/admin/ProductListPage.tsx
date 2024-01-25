@@ -11,7 +11,6 @@ const ProductListPage: React.FC = () => {
   const parsedPageNumber = Number(pageNumber);
 
   const { data, isLoading, error,refetch } = useGetProductsQuery({ pageNumber: parsedPageNumber
-    ,keyword: keyword ? keyword : "",
   });
 
 

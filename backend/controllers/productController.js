@@ -6,25 +6,40 @@ import { serialize,deserialize } from '../utils/redisHelper.js';
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
-
 const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = process.env.PAGINATION_LIMIT;
-  const page = Number(req.query.pageNumber) || 1;
+  try {
+    const pageSize = process.env.PAGINATION_LIMIT;
+    const page = Number(req.query.pageNumber) || 1;
 
-  // get index of products sorted by rating from Redis
-  const start = (page - 1) * pageSize;
-  const stop = page * pageSize - 1;
-  const productIds = await redisClient.zRevRange('productsSortedByRating', start, stop);
+    console.log('PageSize:', pageSize, 'Page Number:', page);
 
-  // get products data from Redis
-  const products = [];
-  for (const id of productIds) {
-    const productData = await redisClient.hGetAll(`product:${id}`);
-    products.push(productData);
+    // get index of products sorted by rating from Redis
+    const start = (page - 1) * pageSize;
+    const stop = page * pageSize - 1;
+
+    console.log('Redis Range Query Start:', start, 'Stop:', stop);
+    // use ZRANGEBYSCORE to get product IDs sorted by rating
+    const productIds = await redisClient.ZRANGEBYSCORE('productsSortedByRating', start, stop, 'REV');
+    console.log('Product IDs:', productIds);
+
+    // get products data from Redis
+    const products = [];
+    for (const id of productIds) {
+      console.log('Fetching product data for ID:', id);
+      const productData = await redisClient.hGetAll(`product:${id}`);
+      console.log('Product Data:', productData);
+      products.push(productData);
+    }
+
+    console.log('Sending Response with Products:', products.length, 'Page:', page, 'Total Pages:', Math.ceil(productIds.length / pageSize));
+    res.json({ products, page, pages: Math.ceil(productIds.length / pageSize) });
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ message: 'Error fetching products' });
   }
-
-  res.json({ products, page, pages: Math.ceil(productIds.length / pageSize) });
 });
+
+
 
   
   // @desc    Fetch single product
