@@ -11,22 +11,21 @@ const getProducts = asyncHandler(async (req, res) => {
   const pageSize = process.env.PAGINATION_LIMIT;
   const page = Number(req.query.pageNumber) || 1;
 
-  const keyword = req.query.keyword
-    ? {
-        name: {
-          $regex: req.query.keyword,
-          $options: 'i',
-        },
-      }
-    : {};
+  // get index of products sorted by rating from Redis
+  const start = (page - 1) * pageSize;
+  const stop = page * pageSize - 1;
+  const productIds = await redisClient.zRevRange('productsSortedByRating', start, stop);
 
-  const count = await Product.countDocuments({ ...keyword });
-  const products = await Product.find({ ...keyword })
-    .limit(pageSize)
-    .skip(pageSize * (page - 1));
+  // get products data from Redis
+  const products = [];
+  for (const id of productIds) {
+    const productData = await redisClient.hGetAll(`product:${id}`);
+    products.push(productData);
+  }
 
-  res.json({ products, page, pages: Math.ceil(count / pageSize) });
+  res.json({ products, page, pages: Math.ceil(productIds.length / pageSize) });
 });
+
   
   // @desc    Fetch single product
   // @route   GET /api/products/:id
