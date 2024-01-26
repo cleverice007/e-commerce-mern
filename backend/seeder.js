@@ -35,10 +35,11 @@ const importData = async () => {
       console.log(`Serialized data for product ${newProduct._id}:`, productData);
       await redisClient.hSet(`product:${newProduct._id}`, productData);
 
-      // 添加产品评分和 ID 到 Redis 的 Sorted Set
-      const productRating = newProduct.rating;
+      // add rating to sorted set in Redis
+      const productRating = newProduct.rating
+      // use negative rating as score to sort from high to low
       await redisClient.zAdd('productsSortedByRating', {
-        score: productRating,
+        score: -productRating,
         value: newProduct._id.toString(),
       });
     }
