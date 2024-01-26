@@ -11,6 +11,9 @@ const ProductCard: React.FC = () => {
   const parsedPageNumber = Number(pageNumber);
 
   const { data, isLoading, error } = useGetProductsQuery({ pageNumber: parsedPageNumber });
+  const cleanId = (id: string) => {
+    return id.replace(/^"|"$/g, ''); // use regex to remove quotes from string
+  };
   console.log("Total Pages:", data?.pages, "Current Page:", data?.page);
 
 
@@ -25,7 +28,7 @@ const ProductCard: React.FC = () => {
           <div key={product._id} className="max-w-sm rounded overflow-hidden shadow-lg">
             <img className="w-full" src={product.image} alt={product.name} />
             <div className="px-6 py-4">
-              <Link to={`/products/${product._id}`}>
+              <Link to={`/products/${cleanId(product._id)}`}>
                 <div className="font-bold text-xl mb-2">{product.name}</div>
               </Link>
               <p className="text-gray-700 text-base">{product.description}</p>

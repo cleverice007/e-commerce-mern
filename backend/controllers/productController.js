@@ -51,17 +51,21 @@ const getProducts = asyncHandler(async (req, res) => {
 // @access  Public
 const getProductById = asyncHandler(async (req, res) => {
   try {
-    const serializedProductData = await redisClient.hGetAll(`product:${req.params.id}`);
+    const productId = req.params.id.trim(); // trim() removes whitespace from both ends of a string
+    console.log('Requested Product ID:', productId);
 
-    // 檢查是否找到了產品
+    const redisKey = `product:${productId}`;
+    console.log('Redis Key:', redisKey);
+
+    const serializedProductData = await redisClient.hGetAll(redisKey);
+    console.log('Serialized Product Data:', serializedProductData);
+
     if (serializedProductData && Object.keys(serializedProductData).length !== 0) {
-      // 反序列化產品數據
       const productData = deserialize(serializedProductData);
-      console.log(`Product with ID ${req.params.id} found in Redis.`);
-      console.log(productData)
+      console.log('Deserialized Product Data:', productData);
       return res.json(productData);
     } else {
-      console.log(`Product with ID ${req.params.id} not found in Redis.`);
+      console.log(`Product with ID ${productId} not found in Redis.`);
       res.status(404);
       throw new Error('Resource not found');
     }
@@ -70,6 +74,7 @@ const getProductById = asyncHandler(async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
