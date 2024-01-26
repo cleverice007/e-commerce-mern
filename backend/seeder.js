@@ -59,13 +59,23 @@ const destroyData = async () => {
     await Product.deleteMany();
     await User.deleteMany();
 
-    console.log('Data Destroyed!'.red.inverse);
+    // delete all products in Redis
+    const productsInRedis = await redisClient.keys('product:*');
+    for (const key of productsInRedis) {
+      await redisClient.del(key);
+    }
+
+    // delete the sorted set in Redis
+    await redisClient.del('productsSortedByRating');
+
+    console.log('Data Destroyed!');
     process.exit();
   } catch (error) {
-    console.error(`${error}`.red.inverse);
+    console.error(`${error}`);
     process.exit(1);
   }
 };
+
 
 if (process.argv[2] === '-d') {
   destroyData();
