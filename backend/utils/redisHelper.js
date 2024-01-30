@@ -30,6 +30,34 @@ const deserialize = (obj) => {
   return deserializedObj;
 };
 
+const serializeOrder = (order) => {
+  const serialized = {};
+  for (const [key, value] of Object.entries(order)) {
+    if (typeof value === 'object' && value !== null) {
+      // turn objects and arrays into JSON strings
+      serialized[key] = JSON.stringify(value);
+    } else {
+      // turn everything else into a string
+      serialized[key] = value.toString();
+    }
+  }
+  return serialized;
+};
 
 
-  export { serialize, deserialize };
+const deserializeOrder = (serializedOrder) => {
+  const deserialized = {};
+  for (const [key, value] of Object.entries(serializedOrder)) {
+    try {
+      // json parse objects and arrays
+      deserialized[key] = JSON.parse(value);
+    } catch (e) {
+      // if it fails, just leave it as a string
+      deserialized[key] = value;
+    }
+  }
+  return deserialized;
+};
+
+
+  export { serialize, deserialize, serializeOrder, deserializeOrder};

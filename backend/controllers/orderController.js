@@ -1,49 +1,56 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
 import redisClient from '../config/redis.js';
-import { serialize, deserialize } from '../utils/redisHelper.js';
+import { serialize, deserialize,serializeOrder,deserializeOrder } from '../utils/redisHelper.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
   const {
-      orderItems,
-      shippingAddress,
-      paymentMethod,
-      itemsPrice,
-      taxPrice,
-      shippingPrice,
-      totalPrice,
-    } = req.body;
-  
-    if (orderItems && orderItems.length === 0) {
-      res.status(400);
-      throw new Error('No order items');
-    } else {
-      const order = new Order({
-        orderItems: orderItems.map((x) => ({
-          ...x,
-          product: x._id,
-          _id: undefined,
-        })),
-        user: req.user._id,
-        shippingAddress,
-        paymentMethod,
-        itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-      });
-  
-      const createdOrder = await order.save();
+    orderItems,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+  } = req.body;
 
-      //serialize the order object and store it in Redis
-      const serializedOrder = serialize(createdOrder.toObject());
-      await redisClient.hSet(`order:${createdOrder._id}`, serializedOrder);
-  
-      res.status(201).json(createdOrder);
-    }
+  if (orderItems && orderItems.length === 0) {
+    res.status(400).json({ message: 'No order items' });
+    return;
+  }
+
+  const order = new Order({
+    orderItems: orderItems.map((item) => ({
+      ...item,
+      product: item._id.replace(/["']/g, ""), // remove quotes from the id
+      _id: undefined,
+    })),
+    user: req.user._id,
+    shippingAddress,
+    paymentMethod,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+  });
+
+  try {
+    const createdOrder = await order.save();
+
+    // serialize the order
+    const serializedOrder = serializeOrder(createdOrder.toObject());
+
+    // store the order in Redis
+    await redisClient.hSet(`order:${createdOrder._id}`, serializedOrder);
+
+    res.status(201).json(createdOrder);
+  } catch (error) {
+    console.error('Error saving order:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 });
 
 // @desc    Get order by ID
@@ -80,10 +87,10 @@ const getOrderById = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/myorders
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id });
-    res.json(orders);
-  });
-  
+  const orders = await Order.find({ user: req.user._id });
+  res.json(orders);
+});
+
 
 // @desc    Update order to paid
 // @route   PUT /api/orders/:id/pay
