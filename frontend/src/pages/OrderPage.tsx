@@ -42,8 +42,6 @@ const OrderPage: React.FC = () => {
         refetch();
     };
 
-
-
     useEffect(() => {
         if (!errorPayPal && !loadingPayPal && paypal.clientId) {
             const loadPaypalScript = async () => {

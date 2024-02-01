@@ -105,9 +105,13 @@ const getMyOrders = asyncHandler(async (req, res) => {
 // @access  Private
 const updateOrderToPaid = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
+
+  
   const order = await Order.findById(orderId);
 
   if (order) {
+   
+
     order.isPaid = true;
     order.paidAt = Date.now();
     order.paymentResult = {
@@ -119,16 +123,23 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 
     const updatedOrder = await order.save();
 
-    //  update the order in Redis
-    const serializedOrder = serialize(updatedOrder.toObject());
-    await redisClient.hSet(`order:${orderId}`, serializedOrder);
+
+
+    try {
+      const serializedOrder = serialize(updatedOrder.toObject());
+      console.log("Serialized order for Redis:", serializedOrder);
+      await redisClient.hSet(`order:${orderId}`, serializedOrder);
+    } catch (error) {
+      console.error("Error updating order in Redis:", error);
+    }
 
     res.json(updatedOrder);
   } else {
-    res.status(404);
-    throw new Error('Order not found');
+    console.error("Order not found, Order ID:", orderId);
+    res.status(404).json({ message: 'Order not found' });
   }
 });
+
 
 
 // @desc    Get all orders

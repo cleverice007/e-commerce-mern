@@ -60,27 +60,37 @@ const serializeOrder = (order) => {
 
 const deserializeOrder = (serializedOrder) => {
   const deserialized = {};
+  // Regular expression to match ISO date format
+  const isoDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+
   for (const [key, value] of Object.entries(serializedOrder)) {
     try {
       if (value === "undefined") {
-        // turn the string "undefined" back into undefined
+        // Convert the string "undefined" back into actual undefined
         deserialized[key] = undefined;
+      } else if (isoDateRegex.test(value)) {
+        // If the value matches ISO date format, convert it to a Date object
+        deserialized[key] = new Date(value);
       } else {
-        // parse JSON strings
+        // Parse JSON strings to objects or arrays
         deserialized[key] = JSON.parse(value);
       }
     } catch (e) {
       if (!isNaN(value) && value.trim() !== '') {
+        // Convert numeric strings to actual numbers
         deserialized[key] = parseFloat(value);
       } else if (value === 'true' || value === 'false') {
+        // Convert "true" or "false" strings to boolean values
         deserialized[key] = value === 'true';
       } else {
+        // For other cases, keep the value as it is (as string)
         deserialized[key] = value;
       }
     }
   }
   return deserialized;
 };
+
 
 
 export default deserializeOrder;
