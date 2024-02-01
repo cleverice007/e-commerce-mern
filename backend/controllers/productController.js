@@ -52,17 +52,13 @@ const getProducts = asyncHandler(async (req, res) => {
 const getProductById = asyncHandler(async (req, res) => {
   try {
     const productId = req.params.id.trim(); // trim() removes whitespace from both ends of a string
-    console.log('Requested Product ID:', productId);
 
     const redisKey = `product:${productId}`;
-    console.log('Redis Key:', redisKey);
 
     const serializedProductData = await redisClient.hGetAll(redisKey);
-    console.log('Serialized Product Data:', serializedProductData);
 
     if (serializedProductData && Object.keys(serializedProductData).length !== 0) {
       const productData = deserialize(serializedProductData);
-      console.log('Deserialized Product Data:', productData);
       return res.json(productData);
     } else {
       console.log(`Product with ID ${productId} not found in Redis.`);

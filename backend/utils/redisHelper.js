@@ -1,43 +1,55 @@
 const serialize = (obj) => {
-  console.log('Serializing:', obj);
-  const serialized = Object.entries(obj).reduce((acc, [key, value]) => {
-    // if the value is an object or array, stringify it
+  const serialized = {};
+  for (const [key, value] of Object.entries(obj)) {
     if ((typeof value === 'object' && value !== null) || Array.isArray(value)) {
-      value = JSON.stringify(value);
-    } 
-    acc.push(key, value);
-    return acc;
-  }, []);
-  console.log('Serialized data:', serialized);
+      // if the value is an object or array, stringify it
+      serialized[key] = JSON.stringify(value);
+    } else {
+      // store the value as a string
+      serialized[key] = value;
+    }
+  }
   return serialized;
 };
 
 
 
 const deserialize = (obj) => {
-  console.log('Deserializing:', obj);
   const deserializedObj = {};
   for (const [key, value] of Object.entries(obj)) {
-    try {
-      // Only parse if the value is a stringified object or array
-      deserializedObj[key] = (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) ? JSON.parse(value) : value;
-    } catch (error) {
-      console.error(`Error deserializing key ${key}:`, error);
-      deserializedObj[key] = value;
+    if (!isNaN(value) && value.trim() !== '') {
+      // turn numeric strings back into numbers
+      deserializedObj[key] = parseFloat(value);
+    } else if (value === 'true' || value === 'false') {
+      // turn boolean strings back into booleans
+      deserializedObj[key] = value === 'true';
+    } else {
+      try {
+        // if the value is a stringified object or array, parse it
+        deserializedObj[key] = JSON.parse(value);
+      } catch (e) {
+        // if the value is not a stringified object or array, store it as a string
+        deserializedObj[key] = value;
+      }
     }
   }
-  console.log('Deserialized object:', deserializedObj);
   return deserializedObj;
 };
 
 const serializeOrder = (order) => {
   const serialized = {};
   for (const [key, value] of Object.entries(order)) {
-    if (typeof value === 'object' && value !== null) {
-      // turn objects and arrays into JSON strings
+    if (value instanceof Date) {
+      // turn dates into ISO strings
+      serialized[key] = value.toISOString();
+    } else if (typeof value === 'object' && value !== null) {
+      // stringify objects and arrays
       serialized[key] = JSON.stringify(value);
+    } else if (value === undefined) {
+      // store undefined values as the string "undefined"
+      serialized[key] = "undefined";
     } else {
-      // turn everything else into a string
+      // store the value as a string
       serialized[key] = value.toString();
     }
   }
@@ -45,19 +57,34 @@ const serializeOrder = (order) => {
 };
 
 
+
 const deserializeOrder = (serializedOrder) => {
   const deserialized = {};
   for (const [key, value] of Object.entries(serializedOrder)) {
     try {
-      // json parse objects and arrays
-      deserialized[key] = JSON.parse(value);
+      if (value === "undefined") {
+        // turn the string "undefined" back into undefined
+        deserialized[key] = undefined;
+      } else {
+        // parse JSON strings
+        deserialized[key] = JSON.parse(value);
+      }
     } catch (e) {
-      // if it fails, just leave it as a string
-      deserialized[key] = value;
+      if (!isNaN(value) && value.trim() !== '') {
+        deserialized[key] = parseFloat(value);
+      } else if (value === 'true' || value === 'false') {
+        deserialized[key] = value === 'true';
+      } else {
+        deserialized[key] = value;
+      }
     }
   }
   return deserialized;
 };
+
+
+export default deserializeOrder;
+
 
 
   export { serialize, deserialize, serializeOrder, deserializeOrder};

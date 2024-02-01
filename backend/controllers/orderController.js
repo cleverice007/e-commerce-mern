@@ -42,9 +42,12 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
     // serialize the order
     const serializedOrder = serializeOrder(createdOrder.toObject());
+    const orderId = `order:${createdOrder._id}`;
 
-    // store the order in Redis
-    await redisClient.hSet(`order:${createdOrder._id}`, serializedOrder);
+    // store each field of the order in Redis hash
+    for (const [key, value] of Object.entries(serializedOrder)) {
+      await redisClient.hSet(orderId, key, value);
+    }
 
     res.status(201).json(createdOrder);
   } catch (error) {
@@ -62,26 +65,31 @@ const getOrderById = asyncHandler(async (req, res) => {
   const cachedOrder = await redisClient.hGetAll(`order:${orderId}`);
   let order;
 
+  console.log('Cached order from Redis:', cachedOrder);
+
   if (cachedOrder && Object.keys(cachedOrder).length !== 0) {
     order = deserialize(cachedOrder);
+    console.log('Deserialized order:', order);
   } else {
-    // if the order is not in Redis, fetch it from MongoDB
     order = await Order.findById(orderId).populate('user', 'name email');
+    console.log('Order from MongoDB:', order);
 
     if (order) {
-      // if the order is found in MongoDB, store it in Redis
       const serializedOrder = serialize(order.toObject());
+      console.log('Serialized order:', serializedOrder); // 新增打印序列化后的订单
       await redisClient.hSet(`order:${orderId}`, serializedOrder);
     }
   }
 
   if (order) {
+    console.log('Final order to send:', order);
     res.json(order);
   } else {
     res.status(404);
     throw new Error('Order not found');
   }
 });
+
 
 // @desc    Get logged in user orders
 // @route   GET /api/orders/myorders
