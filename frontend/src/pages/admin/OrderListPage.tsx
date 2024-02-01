@@ -6,6 +6,7 @@ import { Order } from '../../slices/orderApiSlice';
 const OrderListPage: React.FC = () => {
   const { data: orders, isLoading, error } = useGetOrdersQuery({});
 
+
 return (
     <div className="p-4">
       <h1 className="text-2xl mb-4">Orders</h1>
