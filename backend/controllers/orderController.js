@@ -106,12 +106,9 @@ const getMyOrders = asyncHandler(async (req, res) => {
 const updateOrderToPaid = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
 
-  
   const order = await Order.findById(orderId);
 
   if (order) {
-   
-
     order.isPaid = true;
     order.paidAt = Date.now();
     order.paymentResult = {
@@ -123,14 +120,17 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 
     const updatedOrder = await order.save();
 
-
-
     try {
-      const serializedOrder = serialize(updatedOrder.toObject());
-      console.log("Serialized order for Redis:", serializedOrder);
-      await redisClient.hSet(`order:${orderId}`, serializedOrder);
+      const serializedOrder = serializeOrder(updatedOrder.toObject());
+      const orderKey = `order:${orderId}`;
+      // use hSet to store each field of the order in Redis hash
+      for (const [key, value] of Object.entries(serializedOrder)) {
+        await redisClient.hSet(orderKey, key, value);
+      }
     } catch (error) {
       console.error("Error updating order in Redis:", error);
+      res.status(500).json({ message: 'Internal Server Error' });
+      return;
     }
 
     res.json(updatedOrder);
