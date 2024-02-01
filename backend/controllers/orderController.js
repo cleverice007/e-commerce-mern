@@ -123,7 +123,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     try {
       const serializedOrder = serializeOrder(updatedOrder.toObject());
       const orderKey = `order:${orderId}`;
-      // use hSet to store each field of the order in Redis hash
+      // use object destructuring to store each field of the order in Redis hash
       for (const [key, value] of Object.entries(serializedOrder)) {
         await redisClient.hSet(orderKey, key, value);
       }
@@ -164,16 +164,26 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 
     const updatedOrder = await order.save();
 
-    // update the order in Redis
-    const serializedOrder = serialize(updatedOrder.toObject());
-    await redisClient.hSet(`order:${orderId}`, serializedOrder);
+    try {
+      const serializedOrder = serializeOrder(updatedOrder.toObject());
+      const orderKey = `order:${orderId}`;
+      // use object destructuring to store each field of the order in Redis hash
+      for (const [key, value] of Object.entries(serializedOrder)) {
+        await redisClient.hSet(orderKey, key, value);
+      }
+    } catch (error) {
+      console.error("Error updating order in Redis:", error);
+      res.status(500).json({ message: 'Internal Server Error' });
+      return;
+    }
 
     res.json(updatedOrder);
   } else {
-    res.status(404);
-    throw new Error('Order not found');
+    console.error("Order not found, Order ID:", orderId);
+    res.status(404).json({ message: 'Order not found' });
   }
 });
+
 
 
 export {
