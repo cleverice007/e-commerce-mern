@@ -146,9 +146,25 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 // @route   GET /api/orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name');
-  res.json(orders);
+  // get orders from Redis
+  const cachedOrders = await redisClient.get("orders");
+
+  if (cachedOrders) {
+    // if Redis has orders data, return it
+    const orders = JSON.parse(cachedOrders);
+    res.json(orders);
+  } else {
+    // if Redis does not have orders data, get it from MongoDB
+    const orders = await Order.find({}).populate('user', 'id name');
+
+    // store orders data in Redis
+    await redisClient.set("orders", JSON.stringify(orders), 'EX', 60 * 60); // 设置有效期，例如 1 小时
+
+    // return orders data
+    res.json(orders);
+  }
 });
+
 
 // @desc    Update order to delivered
 // @route   PUT /api/orders/:id/deliver
