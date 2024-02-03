@@ -30,8 +30,13 @@ const PlaceOrderPage = () => {
   const dispatch = useDispatch();
   const placeOrderHandler = async () => {
     try {
+      const orderItems = cart.cartItems.map(item => ({
+        ...item,
+        product: item._id, // change ite._id to product
+      }));
+  
       const res = await createOrder({
-        orderItems: cart.cartItems,
+        orderItems, 
         shippingAddress: cart.shippingAddress,
         paymentMethod: cart.paymentMethod,
         itemsPrice: cart.itemsPrice,
@@ -39,6 +44,7 @@ const PlaceOrderPage = () => {
         taxPrice: cart.taxPrice,
         totalPrice: cart.totalPrice,
       }).unwrap();
+  
       dispatch(clearCartItems());
       navigate(`/order/${res._id}`);
     } catch (err: unknown) {
@@ -49,6 +55,7 @@ const PlaceOrderPage = () => {
       }
     }
   };
+  
   return (
     <>
       <CheckoutSteps step1 step2 step3 step4 />

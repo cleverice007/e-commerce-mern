@@ -1,5 +1,6 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
 import redisClient from '../config/redis.js';
 import { serialize, deserialize,serializeOrder,deserializeOrder } from '../utils/redisHelper.js';
 
@@ -21,12 +22,34 @@ const addOrderItems = asyncHandler(async (req, res) => {
     res.status(400).json({ message: 'No order items' });
     return;
   }
+  console.log('Order items:', orderItems);
 
+  // check if all products are in stock
+  const itemsStock = await Promise.all(orderItems.map(async item => {
+    console.log(`Checking stock for product ID: ${item.product}`); 
+    const product = await Product.findById(item.product);
+    if (!product) {
+      return false; 
+    }
+    const isInStock = product.countInStock >= item.qty;
+    if (!isInStock) {
+      console.log(`Product out of stock: ${item.product}, requested: ${item.qty}, in stock: ${product.countInStock}`); // 如果库存不足，打印详细信息
+    }
+    return isInStock;
+  }));
+
+  if (itemsStock.includes(false)) {
+    return res.status(400).json({ message: 'One or more products are out of stock.' });
+  }
+
+  // create order
   const order = new Order({
-    orderItems: orderItems.map((item) => ({
-      ...item,
-      product: item._id.replace(/["']/g, ""), // remove quotes from the id
-      _id: undefined,
+    orderItems: orderItems.map(item => ({
+      name: item.name,
+      qty: item.qty,
+      image: item.image,
+      price: item.price,
+      product: item.product, 
     })),
     user: req.user._id,
     shippingAddress,
@@ -55,6 +78,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 // @desc    Get order by ID
 // @route   GET /api/orders/:id
@@ -158,7 +182,7 @@ const getOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find({}).populate('user', 'id name');
 
     // store orders data in Redis
-    await redisClient.set("orders", JSON.stringify(orders), 'EX', 60 * 60); // 设置有效期，例如 1 小时
+    await redisClient.set("orders", JSON.stringify(orders), 'EX', 60 * 60); // set expiration to 1 hour
 
     // return orders data
     res.json(orders);
