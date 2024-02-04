@@ -1,7 +1,7 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import generateToken from '../utils/generateToken.js';
 import User from '../models/userModel.js';
-import redisClient from '../config/redis.js';
+import { redisClient } from '../config/redis.js';
 
 // @desc    Auth user & get token
 // @route   POST /api/users/auth

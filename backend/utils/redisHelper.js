@@ -93,8 +93,16 @@ const deserializeOrder = (serializedOrder) => {
 
 
 
-export default deserializeOrder;
+async function acquireLock(redisClient, key, timeout = 1000) {
+  const lock = await redisClient.set(key, 'locked', 'PX', timeout, 'NX');
+  return lock === 'OK';
+}
+
+
+async function releaseLock(redisClient, key) {
+  await redisClient.del(key);
+}
 
 
 
-  export { serialize, deserialize, serializeOrder, deserializeOrder};
+  export { serialize, deserialize, serializeOrder, deserializeOrder, acquireLock, releaseLock};

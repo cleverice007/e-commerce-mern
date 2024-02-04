@@ -1,8 +1,9 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
-import redisClient from '../config/redis.js';
-import { serialize, deserialize,serializeOrder,deserializeOrder } from '../utils/redisHelper.js';
+import { redisClient } from '../config/redis.js';
+import { serialize, deserialize,serializeOrder,acquireLock,releaseLock } from '../utils/redisHelper.js';
+
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -89,18 +90,14 @@ const getOrderById = asyncHandler(async (req, res) => {
   const cachedOrder = await redisClient.hGetAll(`order:${orderId}`);
   let order;
 
-  console.log('Cached order from Redis:', cachedOrder);
 
   if (cachedOrder && Object.keys(cachedOrder).length !== 0) {
     order = deserialize(cachedOrder);
-    console.log('Deserialized order:', order);
   } else {
     order = await Order.findById(orderId).populate('user', 'name email');
-    console.log('Order from MongoDB:', order);
 
     if (order) {
       const serializedOrder = serialize(order.toObject());
-      console.log('Serialized order:', serializedOrder); // 新增打印序列化后的订单
       await redisClient.hSet(`order:${orderId}`, serializedOrder);
     }
   }
@@ -129,10 +126,29 @@ const getMyOrders = asyncHandler(async (req, res) => {
 // @access  Private
 const updateOrderToPaid = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
-
   const order = await Order.findById(orderId);
 
-  if (order) {
+  if (!order) {
+    res.status(404).json({ message: 'Order not found' });
+    return;
+  }
+
+  const lockKeys = order.orderItems.map(item => `locks:product:${item.product}`);
+  try {
+    const locks = await Promise.all(lockKeys.map(key => redlock.lock(key, 1000)));
+
+    for (const item of order.orderItems) {
+      const product = await Product.findById(item.product);
+      if (!product) {
+        throw new Error(`Product not found: ${item.product}`);
+      }
+      if (product.countInStock < item.qty) {
+        throw new Error(`Product ${product.name} out of stock.`);
+      }
+      product.countInStock -= item.qty;
+      await product.save();
+    }
+
     order.isPaid = true;
     order.paidAt = Date.now();
     order.paymentResult = {
@@ -143,7 +159,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     };
 
     const updatedOrder = await order.save();
-
+    // store updated order in Redis
     try {
       const serializedOrder = serializeOrder(updatedOrder.toObject());
       const orderKey = `order:${orderId}`;
@@ -156,15 +172,19 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
       res.status(500).json({ message: 'Internal Server Error' });
       return;
     }
-
+    await Promise.all(locks.map(lock => lock.unlock()));
     res.json(updatedOrder);
-  } else {
-    console.error("Order not found, Order ID:", orderId);
-    res.status(404).json({ message: 'Order not found' });
+  } catch (error) {
+    console.error("Error during order payment processing:", error);
+    // try to unlock any locks that were acquired
+    locks.forEach(lock => {
+      if (lock) {
+        lock.unlock().catch(console.error);
+      }
+    });
+    res.status(500).json({ message: error.message || 'Internal Server Error' });
   }
 });
-
-
 
 // @desc    Get all orders
 // @route   GET /api/orders

@@ -1,6 +1,6 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Product from '../models/productModel.js';
-import redisClient from '../config/redis.js';
+import { redisClient } from '../config/redis.js';
 import { serialize, deserialize } from '../utils/redisHelper.js';
 
 // @desc    Fetch all products
