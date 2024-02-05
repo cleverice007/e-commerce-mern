@@ -23,7 +23,6 @@ const addOrderItems = asyncHandler(async (req, res) => {
     res.status(400).json({ message: 'No order items' });
     return;
   }
-  console.log('Order items:', orderItems);
 
   // check if all products are in stock
   const itemsStock = await Promise.all(orderItems.map(async item => {
@@ -134,9 +133,19 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
   }
 
   const lockKeys = order.orderItems.map(item => `locks:product:${item.product}`);
-  try {
-    const locks = await Promise.all(lockKeys.map(key => redlock.lock(key, 1000)));
+  let locksAcquired = [];
 
+  try {
+    // try to acquire locks for all products in the order
+    for (const key of lockKeys) {
+      const lockAcquired = await acquireLock(redisClient, key);
+      if (!lockAcquired) {
+        throw new Error("Failed to acquire lock");
+      }
+      locksAcquired.push(key);
+    }
+
+    // update product stock and order status
     for (const item of order.orderItems) {
       const product = await Product.findById(item.product);
       if (!product) {
@@ -159,32 +168,23 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     };
 
     const updatedOrder = await order.save();
-    // store updated order in Redis
-    try {
-      const serializedOrder = serializeOrder(updatedOrder.toObject());
-      const orderKey = `order:${orderId}`;
-      // use object destructuring to store each field of the order in Redis hash
-      for (const [key, value] of Object.entries(serializedOrder)) {
-        await redisClient.hSet(orderKey, key, value);
-      }
-    } catch (error) {
-      console.error("Error updating order in Redis:", error);
-      res.status(500).json({ message: 'Internal Server Error' });
-      return;
-    }
-    await Promise.all(locks.map(lock => lock.unlock()));
+
+    // update order in Redis
+    const serializedOrder = serializeOrder(updatedOrder.toObject());
+    const orderKey = `order:${orderId}`;
+    await redisClient.hSet(orderKey, ...Object.entries(serializedOrder).flat());
+
     res.json(updatedOrder);
   } catch (error) {
     console.error("Error during order payment processing:", error);
-    // try to unlock any locks that were acquired
-    locks.forEach(lock => {
-      if (lock) {
-        lock.unlock().catch(console.error);
-      }
-    });
     res.status(500).json({ message: error.message || 'Internal Server Error' });
+  } finally {
+    // release locks for all products
+    locksAcquired.forEach(key => releaseLock(redisClient, key).catch(console.error));
   }
 });
+
+
 
 // @desc    Get all orders
 // @route   GET /api/orders

@@ -11,7 +11,6 @@ const getProducts = asyncHandler(async (req, res) => {
     const pageSize = parseInt(process.env.PAGINATION_LIMIT, 10);
     const page = parseInt(req.query.pageNumber, 10) || 1;
 
-    console.log('PageSize:', pageSize, 'Page Number:', page);
 
     // Get the total count of products
     const totalCount = await redisClient.zCard('productsSortedByRating');
@@ -20,22 +19,18 @@ const getProducts = asyncHandler(async (req, res) => {
     const start = (page - 1) * pageSize;
     const stop = page * pageSize - 1;
     
-    
-    console.log('Redis Range Query Start:', start, 'Stop:', stop);
-    
+        
     // use ZRANGE to get the product IDs
     const productIds = await redisClient.ZRANGE('productsSortedByRating', start, stop);
     // Retrieve product data from Redis
     const products = [];
     for (const id of productIds) {
       const productData = await redisClient.hGetAll(`product:${id}`);
-      console.log(`Product ID: ${id}, Rating: ${productData.rating}`);
       products.push(productData);
     }
 
 
 
-    console.log('Sending Response with Products:', products.length, 'Page:', page, 'Total Pages:', totalPages);
     res.json({ products, page, pages: totalPages });
   } catch (error) {
     console.error('Error fetching products:', error);
