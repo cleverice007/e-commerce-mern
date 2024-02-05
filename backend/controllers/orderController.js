@@ -2,7 +2,7 @@ import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import { redisClient } from '../config/redis.js';
-import { serialize, deserialize,serializeOrder,acquireLock,releaseLock } from '../utils/redisHelper.js';
+import { serialize, deserialize, serializeOrder, acquireLock, releaseLock } from '../utils/redisHelper.js';
 
 
 // @desc    Create new order
@@ -26,10 +26,10 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
   // check if all products are in stock
   const itemsStock = await Promise.all(orderItems.map(async item => {
-    console.log(`Checking stock for product ID: ${item.product}`); 
+    console.log(`Checking stock for product ID: ${item.product}`);
     const product = await Product.findById(item.product);
     if (!product) {
-      return false; 
+      return false;
     }
     const isInStock = product.countInStock >= item.qty;
     if (!isInStock) {
@@ -49,7 +49,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
       qty: item.qty,
       image: item.image,
       price: item.price,
-      product: item.product, 
+      product: item.product,
     })),
     user: req.user._id,
     shippingAddress,
@@ -167,12 +167,23 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
       email_address: req.body.payer.email_address,
     };
 
+
+
     const updatedOrder = await order.save();
+
 
     // update order in Redis
     const serializedOrder = serializeOrder(updatedOrder.toObject());
     const orderKey = `order:${orderId}`;
-    await redisClient.hSet(orderKey, ...Object.entries(serializedOrder).flat());
+    // 使用 map 和 Promise.all 更新 Redis
+    await Promise.all(
+      Object.entries(serializedOrder).map(([key, value]) =>
+        redisClient.hSet(orderKey, key, value)
+      )
+    );
+
+    // 檢查 Redis 中的數據
+    const cachedOrder = await redisClient.hGetAll(orderKey);
 
     res.json(updatedOrder);
   } catch (error) {
@@ -183,6 +194,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     locksAcquired.forEach(key => releaseLock(redisClient, key).catch(console.error));
   }
 });
+
 
 
 
