@@ -182,9 +182,6 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
       )
     );
 
-    // 檢查 Redis 中的數據
-    const cachedOrder = await redisClient.hGetAll(orderKey);
-
     res.json(updatedOrder);
   } catch (error) {
     console.error("Error during order payment processing:", error);
@@ -225,7 +222,6 @@ const getOrders = asyncHandler(async (req, res) => {
 // @desc    Update order to delivered
 // @route   PUT /api/orders/:id/deliver
 // @access  Private/Admin
-
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
   const order = await Order.findById(orderId);
@@ -239,10 +235,12 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
     try {
       const serializedOrder = serializeOrder(updatedOrder.toObject());
       const orderKey = `order:${orderId}`;
-      // use object destructuring to store each field of the order in Redis hash
-      for (const [key, value] of Object.entries(serializedOrder)) {
-        await redisClient.hSet(orderKey, key, value);
-      }
+      // 使用 map 和 Promise.all 來逐一更新 Redis 中的訂單項目
+      await Promise.all(
+        Object.entries(serializedOrder).map(([key, value]) =>
+          redisClient.hSet(orderKey, key, value)
+        )
+      );
     } catch (error) {
       console.error("Error updating order in Redis:", error);
       res.status(500).json({ message: 'Internal Server Error' });
@@ -255,6 +253,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
     res.status(404).json({ message: 'Order not found' });
   }
 });
+
 
 
 
