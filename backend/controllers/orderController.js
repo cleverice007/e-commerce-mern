@@ -2,7 +2,8 @@ import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import { redisClient } from '../config/redis.js';
-import { serialize, deserialize, serializeOrder, acquireLock, releaseLock } from '../utils/redisHelper.js';
+import { serialize, deserialize, serializeOrder, acquireLock, releaseLock
+,updateProductStockInRedis } from '../utils/redisHelper.js';
 
 
 // @desc    Create new order
@@ -26,7 +27,6 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
   // check if all products are in stock
   const itemsStock = await Promise.all(orderItems.map(async item => {
-    console.log(`Checking stock for product ID: ${item.product}`);
     const product = await Product.findById(item.product);
     if (!product) {
       return false;
@@ -156,6 +156,8 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
       }
       product.countInStock -= item.qty;
       await product.save();
+      const serializeProduct = serialize(product.toObject());
+      await redisClient.hSet(`product:${product._id}`, serializeProduct);
     }
 
     order.isPaid = true;

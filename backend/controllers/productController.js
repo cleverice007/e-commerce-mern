@@ -54,6 +54,7 @@ const getProductById = asyncHandler(async (req, res) => {
 
     if (serializedProductData && Object.keys(serializedProductData).length !== 0) {
       const productData = deserialize(serializedProductData);
+      console.log('productData:', productData);
       return res.json(productData);
     } else {
       console.log(`Product with ID ${productId} not found in Redis.`);

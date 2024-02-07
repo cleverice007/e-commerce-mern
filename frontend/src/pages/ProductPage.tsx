@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Rating from '../components/Rating';
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { useGetProductDetailsQuery, useCreateReviewMutation } from '../slices/productSlice';
 import { toast } from 'react-toastify';
@@ -48,6 +48,12 @@ const ProductPage: React.FC = () => {
       alert(error.data?.message || error.error || 'An unknown error occurred');
     }
   };
+
+  useEffect(() => {
+    if (productId) {
+      refetch();
+    }
+  }, [productId, refetch]);
 
 
   if (isLoading) {
