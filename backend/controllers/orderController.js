@@ -3,7 +3,7 @@ import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import { redisClient } from '../config/redis.js';
 import { serialize, deserialize, serializeOrder, acquireLock, releaseLock
-,updateProductStockInRedis } from '../utils/redisHelper.js';
+, } from '../utils/redisHelper.js';
 
 
 // @desc    Create new order
