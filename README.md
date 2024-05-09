@@ -15,7 +15,7 @@
 https://e-commerce-mern-3.onrender.com/login
 email address = mason1@gmail.com
 password = mason1
-
+```
 ## Overview
 前端使用 TypeScript，後端使用 JavaScript。project 具備用戶註冊、登入、將商品添加到購物車，並通過 PayPal 進行模擬結帳。
 所有的產品資料都儲存在 Redis 中，同時使用 Redis 來確認電子郵件地址是否重複註冊。此外，本系統使用鎖機制來解決產品結帳時的concurrency。
