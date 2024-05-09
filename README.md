@@ -1,4 +1,20 @@
 # E-Commerce Website
+![註冊](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.30.11.png)
+![商品頁面](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.32.59.png)
+![放入購物車](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.33.19.png)
+![評論](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.33.37.png)
+![展示評論](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.33.49.png)
+![checkout](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.33.57.png)
+![結帳](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.34.25.png)
+![修改資料](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.35.06.png)
+![admin](https://github.com/cleverice007/e-commerce-mern/blob/main/截圖%202024-05-09%20上午11.35.19.png)
+
+
+## demo 連結
+```bash
+https://e-commerce-mern-3.onrender.com/login
+email address = mason1@gmail.com
+password = mason1
 
 ## Overview
 前端使用 TypeScript，後端使用 JavaScript。project 具備用戶註冊、登入、將商品添加到購物車，並通過 PayPal 進行模擬結帳。
